@@ -87,6 +87,7 @@ public class MainFrame {
                     if (signalTerminate.tryAcquire(10, TimeUnit.MILLISECONDS)) {
                         signalTerminated.release();
                         canvas.doDisposeCanvas();
+                        
                         return;
                     }
                 } catch (Exception e) {
@@ -191,8 +192,8 @@ public class MainFrame {
                 if (m.getMeshModel() == null) {
                     Logger.err("The model of  " + contents[0] + " is null");
                 }
-                Entity e = new Entity(m, contents[0], contents[1]);
-                LoadComponents.loadComponents(ResourcePackLoader.getComponentsByID().get(Integer.valueOf(contents[1])), e);
+                Entity e = new Entity(m, contents[0], contents[2],Integer.parseInt(contents[1]));
+                LoadComponents.loadComponents(ResourcePackLoader.getComponentsByID().get(Integer.valueOf(contents[2])), e);
                 if (e.getModel() == null) {
                     Logger.err("The model of  " + e + " is null");
                 }

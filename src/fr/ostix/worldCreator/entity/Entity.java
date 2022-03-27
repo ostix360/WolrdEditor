@@ -28,19 +28,22 @@ public class Entity {
 
     private List<Component> components = new ArrayList<>();
     private boolean picking = false;
+    private final int id;
 
-    public Entity(Model model, Vector3f position, Vector3f rotation, float scale) {
+    public Entity(Model model, Vector3f position, Vector3f rotation, float scale, int id) {
         this.model = model;
         this.position = position;
         this.rotation = rotation;
         this.scale = new Vector3f(scale);
+        this.id = id;
         this.transform = new Transform(position, rotation, scale);
     }
 
-    public Entity(Model m, String name,String componentID) {
+    public Entity(Model m, String name, String componentID, int id) {
         this.model = m;
         this.name = name;
         this.componentID = componentID;
+        this.id = id;
         this.position = new Vector3f(0);
         this.rotation = new Vector3f(0);
         this.scale = new Vector3f(1);
@@ -58,6 +61,7 @@ public class Entity {
         this.textureIndex = entity.textureIndex;
         this.componentID = entity.componentID;
         this.collision = new CollisionComponent(this,new CollisionProperties(entity.getCollision().getProperties()));
+        this.id = entity.id;
     }
 
     public void setTransform(Transform transform) {
@@ -152,6 +156,10 @@ public class Entity {
             return row / model.getTexture().getNumbersOfRows();
         }
         return 1;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public MovementType getMovement() {

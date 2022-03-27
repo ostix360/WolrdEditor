@@ -12,8 +12,7 @@ import fr.ostix.worldCreator.entity.Entity;
 import fr.ostix.worldCreator.entity.component.light.Light;
 import fr.ostix.worldCreator.entity.Transform;
 import fr.ostix.worldCreator.entity.camera.Camera;
-import fr.ostix.worldCreator.frame.MainFrame;
-import fr.ostix.worldCreator.frame.PopUp;
+import fr.ostix.worldCreator.frame.*;
 import fr.ostix.worldCreator.graphics.MasterRenderer;
 import fr.ostix.worldCreator.graphics.model.*;
 import fr.ostix.worldCreator.graphics.textures.*;
@@ -49,12 +48,25 @@ public class Main {
         Camera cam = new Camera(playerTransform);
         Workspace workspace = new Workspace();
         renderer.initToRender(waterTiles,terrains,lights);
-
         World world = new World(renderer,terrains,cam);
+        ExitMenu exitMenu = new ExitMenu(world);
+        Thread.currentThread().setUncaughtExceptionHandler((t, e) -> {
+            System.err.println("Exception in " + t.getName());
+            e.printStackTrace();
+            exitMenu.show(true);
+            System.exit(301);
+        });
         MainFrame frame = new MainFrame(renderer,workspace,cam,world);
         Thread renderThread = new Thread(frame.getRenderRunnable(),"Render Thread");
+        renderThread.setUncaughtExceptionHandler((t, e) -> {
+            System.err.println("Exception in " + t.getName());
+            e.printStackTrace();
+            exitMenu.show(true);
+            System.exit(301);
+        });
         renderThread.start();
         lights.add(light);
+
 
         ResourcePackLoader rpl = new ResourcePackLoader();
         try {
@@ -101,8 +113,7 @@ public class Main {
                         0,1,false,true,false)));
 //        Terrain t = new Terrain(0,0,tp,blendt);
         Runtime.getRuntime().addShutdownHook(new Thread(()-> {
-            System.out.println("Saving world...");
-            world.getChunkManager().save();
+            System.out.println("Fermeture");
         }));
     }
 

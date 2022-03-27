@@ -22,7 +22,6 @@ import org.joml.*;
 import java.awt.event.*;
 import java.lang.*;
 import java.lang.Math;
-import java.lang.Runtime;
 import java.util.*;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -62,7 +61,7 @@ public class World {
 
 
     public static Entity addAABB(Vector3 bodyPosition, Vector3 size) {
-        Entity entity = new Entity(Config.CUBE, Maths.toVector3f(bodyPosition), new Vector3f(), 1);
+        Entity entity = new Entity(Config.CUBE, Maths.toVector3f(bodyPosition), new Vector3f(), 1, -1);
         entity.setScale(Maths.toVector3f(size));
         aabbs.add(entity);
         return entity;
@@ -153,7 +152,7 @@ public class World {
                 if (Input.keys[KeyEvent.VK_R]) {
                     entityPicked.increaseRotation(new Vector3f(0, 1, 0));
                 }
-                entityPicked.getScale().add(new Vector3f(GLCanvas.mouseDWheel / 20f));
+                entityPicked.getScale().add(new Vector3f(GLCanvas.mouseDWheel * entityPicked.getScale().y() / 25f));
                 if (Input.keysMouse[GLFW_MOUSE_BUTTON_1] && canAddEntity) {
                     Entity clone = entityPicked.clone();
                     entities.add(clone);

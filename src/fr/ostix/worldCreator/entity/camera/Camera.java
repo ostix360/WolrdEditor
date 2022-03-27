@@ -57,7 +57,7 @@ public class Camera implements ICamera {
         return projection.mul(getViewMatrix());
     }
 
-    public void move(float dWell) {
+    public void move() {
         checkInput();
         applyToPlayerTransform();
         this.terrainHeight = World.getTerrainHeight(this.position.x(), this.position.z()) + 2;

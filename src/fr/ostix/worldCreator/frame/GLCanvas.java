@@ -51,7 +51,7 @@ public class GLCanvas extends AWTGLCanvas implements KeyListener,MouseWheelListe
     @Override
     public void paintGL() {
         world.update();
-        cam.move(mouseDWheel);
+        cam.move();
         mouseDWheel = 0;
         render.renderScene(cam);
         MasterParticle.update(cam);

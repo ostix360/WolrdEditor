@@ -52,7 +52,7 @@ public class Chunk {
     private void exportEntities(FileChannel fc) throws IOException {
         fc.write(DataTransformer.lineBuffer("ENTITIES"));
         for (Entity e : this.entities) {
-            String entityContent = e.toString() +";"+ e.getComponent();
+            String entityContent = e.toString() +";"+ e.getId() +";"+e.getComponent();
             fc.write(DataTransformer.lineBuffer(entityContent));
             e.getTransform().export(fc);
         }
@@ -98,9 +98,10 @@ public class Chunk {
         while (index < lines.length) {
             String[] values = lines[index++].split(";");
             String entityName = values[0];
-            int component = Integer.parseInt(values[1]);
+            int id = Integer.parseInt(values[1]);
+            int component = Integer.parseInt(values[2]);
             Model m = ResourcePackLoader.getModelByName().get(entityName);
-            Entity e = new Entity(m, entityName, String.valueOf(component));
+            Entity e = new Entity(m, entityName, String.valueOf(component), id);
             LoadComponents.loadComponents(ResourcePackLoader.getComponentsByID().get(component), e);
             if (e.getModel() == null) {
                 Logger.err("The model of  " + e + " is null");
