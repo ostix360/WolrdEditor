@@ -3,14 +3,15 @@ package fr.ostix.worldCreator.toolBox.OpenGL;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.*;
 
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
+import java.nio.*;
 
 import static org.lwjgl.opengl.GL15.*;
 
 public class VBO {
 
     private final int id;
+    private Buffer buffer;
+
 
     private VBO(int id) {
         this.id = id;
@@ -31,16 +32,16 @@ public class VBO {
 
     public void storeDataInAttributeList(int attrib, int dataSize, float[] data) {
         glBindBuffer(GL_ARRAY_BUFFER, this.id); //Activation de l'addresse memoir
-        FloatBuffer buffer = createFloatBuffer(data);   //creation d'une memoir tampon (Buffer) du tableau a ajouter dans notre VAO
-        glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);  //Definition des données dans une memoir tampon (Buffer)
+        buffer = createFloatBuffer(data);   //creation d'une memoir tampon (Buffer) du tableau a ajouter dans notre VAO
+        glBufferData(GL_ARRAY_BUFFER, (FloatBuffer) buffer, GL_STATIC_DRAW);  //Definition des données dans une memoir tampon (Buffer)
         GL20.glVertexAttribPointer(attrib, dataSize, GL11.GL_FLOAT, false, 0, 0);     //Definition de l'index,nombre de donné a lire dans le tableau par arrete,type de variable,sont des vecteur normalizer ou pas dans la memoir tampon
         glBindBuffer(GL_ARRAY_BUFFER, 0);       //Desactivation du VBO actife
     }
 
     public void storeIntDataInAttributeList(int attrib, int dataSize, int[] data) {
         glBindBuffer(GL_ARRAY_BUFFER, this.id); //Activation de l'addresse memoir
-        IntBuffer buffer = createIntBuffer(data);   //creation d'une memoir tampon (Buffer) du tableau a ajouter dans notre VAO
-        glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);  //Definition des données dans une memoir tampon (Buffer)
+        buffer = createIntBuffer(data);   //creation d'une memoir tampon (Buffer) du tableau a ajouter dans notre VAO
+        glBufferData(GL_ARRAY_BUFFER, (IntBuffer) buffer, GL_STATIC_DRAW);  //Definition des données dans une memoir tampon (Buffer)
         GL30.glVertexAttribIPointer(attrib, dataSize, GL11.GL_INT, 0, 0);     //Definition de l'index,nombre de donné a lire dans le tableau par arrete,type de variable,sont des vecteur normalizer ou pas dans la memoir tampon
         glBindBuffer(GL_ARRAY_BUFFER, 0);       //Desactivation du VBO actife
     }
@@ -54,8 +55,8 @@ public class VBO {
 
     public void storeIndicesDataInAttributeList(int[] indices) {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this.id); //Activation de l'addresse memoir
-        IntBuffer buffer = createIntBuffer(indices);   //creation d'une memoir tampon (Buffer) du tableau a ajouter dans notre VAO
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);  //Definition des données dans une memoir tampon (Buffer)
+        buffer = createIntBuffer(indices);   //creation d'une memoir tampon (Buffer) du tableau a ajouter dans notre VAO
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, (IntBuffer) buffer, GL_STATIC_DRAW);  //Definition des données dans une memoir tampon (Buffer)
     }
 
     private FloatBuffer createFloatBuffer(float[] data) {
@@ -83,8 +84,10 @@ public class VBO {
 
     public void delete() {
         GL15.glDeleteBuffers(id);
+        buffer.clear();
     }
 
-
-
+    public Buffer getBuffer() {
+        return buffer;
+    }
 }

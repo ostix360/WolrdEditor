@@ -75,7 +75,7 @@ public class MasterRenderer {
     private void processEntity(Entity e) {
         Model model = e.getModel();
         if (model == null) {
-            // Logger.err("The model of " + e + " is null");
+             Logger.err("The model of " + e + " is null");
         }
         List<Entity> batch = entities.get(model);
         if (batch != null) {

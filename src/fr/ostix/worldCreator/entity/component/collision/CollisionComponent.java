@@ -5,11 +5,11 @@ import fr.ostix.worldCreator.entity.*;
 import fr.ostix.worldCreator.entity.component.*;
 
 public class CollisionComponent extends Component {
-    private final CollisionProperties properties;
 
-    public CollisionComponent(Entity e, CollisionProperties properties) {
+
+    public CollisionComponent(Entity e) {
         super(ComponentType.COLLISION_COMPONENT, e);
-        this.properties = properties;
+
     }
 
     @Override
@@ -17,7 +17,4 @@ public class CollisionComponent extends Component {
 
     }
 
-    public CollisionProperties getProperties() {
-        return properties;
-    }
 }

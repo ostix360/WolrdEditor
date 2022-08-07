@@ -67,7 +67,7 @@ public class ErrorPopUp {
         gc.weighty = 1.0D;
         confirm.addActionListener(arg0 -> {
             frame.setVisible(false);
-            System.out.println("MODIFY ErrorPopUp 58");
+            System.out.println("ErrorPopUp 58");
             System.err.println(location);
             frame.dispose();
             System.exit(-168);

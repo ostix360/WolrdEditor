@@ -45,7 +45,6 @@ public class Chunk {
         if (this.entities.isEmpty()) {
                 return true;
         }
-
         return false;
     }
 
@@ -126,5 +125,13 @@ public class Chunk {
         String heightMap = values[1];
         return new Terrain(x / Terrain.getSIZE(), z / Terrain.getSIZE(), ttp, blendMap, heightMap);
 
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getZ() {
+        return z;
     }
 }

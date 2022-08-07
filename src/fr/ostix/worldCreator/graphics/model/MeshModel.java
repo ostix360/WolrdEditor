@@ -4,7 +4,7 @@ package fr.ostix.worldCreator.graphics.model;
 import fr.ostix.worldCreator.toolBox.OpenGL.*;
 
 public class MeshModel {
-
+    private int[][] lod;
     private final VAO vaoID;
 
     public MeshModel(VAO vaoID) {
@@ -17,5 +17,13 @@ public class MeshModel {
 
     public int getVertexCount() {
         return vaoID.getVertexCount();
+    }
+
+    public int[][] getLod() {
+        return lod;
+    }
+
+    public void setLod(int[][] lod) {
+        this.lod = lod;
     }
 }

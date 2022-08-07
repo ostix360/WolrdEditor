@@ -3,6 +3,7 @@ package fr.ostix.worldCreator.entity;
 import fr.ostix.worldCreator.core.exporter.*;
 import fr.ostix.worldCreator.toolBox.*;
 import org.joml.*;
+import org.joml.Math;
 
 import java.io.*;
 import java.nio.channels.*;
@@ -58,6 +59,15 @@ public class Transform {
         Matrix4f m = Maths.createTransformationMatrix(this.position, this.rotation, this.scale);
         if (rotationMatrix != null) m.mul(rotationMatrix.get(new Matrix4f()));
         return m;
+    }
+
+    public Quaternionf getQRotation(){
+        Matrix3f matrix = new Matrix3f();
+
+        matrix.rotate(Math.toRadians(this.rotation.z()), new Vector3f(0, 0, 1));
+        matrix.rotate(Math.toRadians(this.rotation.y()), new Vector3f(0, 1, 0));
+        matrix.rotate(Math.toRadians(this.rotation.x()), new Vector3f(1, 0, 0));
+        return matrix.getNormalizedRotation(new Quaternionf());
     }
 
     public Vector3f getRotation() {

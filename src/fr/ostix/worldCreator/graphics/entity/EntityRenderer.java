@@ -41,7 +41,6 @@ public class EntityRenderer {
     public void render(Map<Model, List<Entity>> entities, List<Light> lights, Camera cam, Color skyColor, Vector4f clipPlane) {
         prepare(lights, skyColor, cam, clipPlane);
         for (Model model : entities.keySet()) {
-            OpenGlUtils.goWireframe(false);
             if (model.getMeshModel() == null) {
                 Main.notifyNullModel(entities.get(model).get(0));
             }

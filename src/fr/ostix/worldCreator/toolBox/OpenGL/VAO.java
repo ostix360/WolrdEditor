@@ -1,5 +1,6 @@
 package fr.ostix.worldCreator.toolBox.OpenGL;
 
+import com.jme3.jme3tools.*;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
@@ -10,7 +11,7 @@ public class VAO {
     public final int id;
     private final List<VBO> VBOs = new ArrayList<>();
     private int vertexCount;
-    private float[] position;
+    private VertexBuffer position;
     private int[] indices;
 
     private VAO(int id) {
@@ -38,7 +39,8 @@ public class VAO {
         VBO vbo = VBO.createVBO();
         VBOs.add(vbo);
         vbo.storeDataInAttributeList(attrib, dataSize, position);
-        this.position = position;
+        this.position = new VertexBuffer(VertexBuffer.Type.Position);
+        this.position.setupData(VertexBuffer.Usage.Dynamic,dataSize , VertexBuffer.Format.Float , vbo.getBuffer());
     }
 
     public void storeDataInAttributeList(int attrib, int dataSize, float[] data) {
@@ -92,7 +94,7 @@ public class VAO {
         GL30.glBindVertexArray(0);
     }
 
-    public float[] getPosition() {
+    public VertexBuffer getPosition() {
         return position;
     }
 

@@ -30,13 +30,14 @@ import java.lang.*;
 import java.lang.Runtime;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.concurrent.*;
 
 public class Main {
 
     public static final int MAX_LIGHTS = 5;
     private static final List<Light> lights = new ArrayList<>();
     private static final List<WaterTile> waterTiles = new ArrayList<>();
-    private static final Map<Vector2f, Chunk> terrains = Collections.synchronizedMap(new HashMap<>());
+    private static final Map<Vector2f, Chunk> terrains = new ConcurrentHashMap<>();
 
     public static final Light light = new Light(new Vector3f(100,100000,100), Color.SUN,null);
 

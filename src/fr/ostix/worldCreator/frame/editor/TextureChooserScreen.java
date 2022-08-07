@@ -20,6 +20,7 @@ public class TextureChooserScreen {
     private File chosen;
 
     public TextureChooserScreen(String type) {
+        Toolkit.getDefaultToolkit().beep();
         setUpFrame();
         addLabel();
         addFileList(getAllIconFiles(type));
@@ -69,11 +70,11 @@ public class TextureChooserScreen {
                 if (!list.isSelectionEmpty()) {
                     chosen = (list.getSelectedValue()).getFile();
 
-                    frame.setVisible(false);
-                    frame.dispose();
                 } else {
                     new ErrorPopUp("Couldn't open texture file!");
                 }
+                frame.setVisible(false);
+                frame.dispose();
             }
         });
         this.frame.add(confirm, gc);

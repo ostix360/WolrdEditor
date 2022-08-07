@@ -1,6 +1,7 @@
 package fr.ostix.worldCreator.terrain;
 
 
+import com.jme3.bullet.control.*;
 import fr.ostix.worldCreator.core.resourcesProcessor.*;
 import fr.ostix.worldCreator.frame.*;
 import fr.ostix.worldCreator.graphics.model.*;
@@ -30,6 +31,9 @@ public class Terrain {
     private String heightMap;
     private ModelLoaderRequest modelRequest;
     private static Map<Vector2f, Chunk> worldChunk;
+
+    private TerrainControl control = null;
+
 
     public Terrain(float gridX, float gridZ, TerrainTexturePack texturePack, TerrainTexture blendMap, String heightMap) {
         this.x = gridX * SIZE;
@@ -319,5 +323,13 @@ public class Terrain {
 
     public String getHeightMap() {
         return heightMap;
+    }
+
+    public void setControl(TerrainControl tc) {
+        this.control = tc;
+    }
+
+    public TerrainControl getControl() {
+        return control;
     }
 }

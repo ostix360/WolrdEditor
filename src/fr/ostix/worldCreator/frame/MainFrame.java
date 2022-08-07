@@ -11,6 +11,7 @@ import fr.ostix.worldCreator.graphics.model.*;
 import fr.ostix.worldCreator.terrain.*;
 import fr.ostix.worldCreator.toolBox.*;
 import fr.ostix.worldCreator.world.*;
+import fr.ostix.worldCreator.world.chunk.*;
 import org.lwjgl.opengl.awt.*;
 
 import javax.imageio.*;
@@ -60,11 +61,8 @@ public class MainFrame {
                     // wait until the thread is done with the cleanup
                     signalTerminated.acquire();
                 } catch (InterruptedException ignored) {
-                    System.err.println("Terminate without cleaning!");
-                } finally {
-                    super.dispose();
                 }
-
+                super.dispose();
             }
         };
         initFrame();
@@ -87,7 +85,7 @@ public class MainFrame {
                     if (signalTerminate.tryAcquire(10, TimeUnit.MILLISECONDS)) {
                         signalTerminated.release();
                         canvas.doDisposeCanvas();
-                        
+                        ChunkHandler.stopChunkHandler();
                         return;
                     }
                 } catch (Exception e) {

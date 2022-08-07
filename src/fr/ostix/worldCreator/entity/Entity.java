@@ -1,7 +1,7 @@
 package fr.ostix.worldCreator.entity;
 
 
-import com.flowpowered.react.math.*;
+import com.jme3.bullet.control.*;
 import fr.ostix.worldCreator.entity.component.*;
 import fr.ostix.worldCreator.entity.component.collision.*;
 import fr.ostix.worldCreator.entity.component.particle.*;
@@ -13,8 +13,6 @@ import java.util.*;
 
 public class Entity {
 
-    protected final Vector3 forceToCenter = new Vector3();
-    protected final Vector3 torque = new Vector3();
     private final Model model;
     protected Vector3f position;
     protected Vector3f rotation;
@@ -26,9 +24,12 @@ public class Entity {
     private String name;
     private String componentID;
 
+
     private List<Component> components = new ArrayList<>();
     private boolean picking = false;
     private final int id;
+    protected PhysicsControl physic;
+
 
     public Entity(Model model, Vector3f position, Vector3f rotation, float scale, int id) {
         this.model = model;
@@ -48,6 +49,7 @@ public class Entity {
         this.rotation = new Vector3f(0);
         this.scale = new Vector3f(1);
         this.transform = new Transform(position, rotation, 1);
+        this.movement = MovementType.FORWARD;
     }
 
     public Entity(Entity entity) {
@@ -60,8 +62,10 @@ public class Entity {
         this.components = entity.components;
         this.textureIndex = entity.textureIndex;
         this.componentID = entity.componentID;
-        this.collision = new CollisionComponent(this,new CollisionProperties(entity.getCollision().getProperties()));
+        this.collision = entity.collision;
         this.id = entity.id;
+        this.movement = MovementType.STATIC;
+        this.picking = entity.picking;
     }
 
     public void setTransform(Transform transform) {
@@ -90,6 +94,10 @@ public class Entity {
             }
             c.update();
         }
+        if (physic != null) {
+            physic.update(1/60f);
+        }
+
     }
 
     @Override
@@ -110,8 +118,11 @@ public class Entity {
     }
 
     public void increaseRotation(Vector3f value) {
-        rotation.add(value);
-        rotation.y %= 360;
+        rotation.add(value); // TODO
+//        for (BoundingModel bm : collision.getProperties().getBoundingModels()) {
+//            bm.getTransform().getRotation().add(value);
+//        }
+//        rotation.y %= 360;
         //transform.setRotation(rotation);
     }
 
@@ -170,14 +181,6 @@ public class Entity {
         this.movement = movement;
     }
 
-    public Vector3 getForceToCenter() {
-        return forceToCenter;
-    }
-
-
-    public Vector3 getTorque() {
-        return torque.multiply(100);
-    }
 
     public void setScale(Vector3f scale) {
         this.scale = scale;
@@ -195,6 +198,25 @@ public class Entity {
         return this.componentID;
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Entity)) return false;
+        Entity entity = (Entity) o;
+        return textureIndex == entity.textureIndex && isPicking() == entity.isPicking() && getId() == entity.getId() && getModel().equals(entity.getModel()) && getPosition().equals(entity.getPosition()) && getRotation().equals(entity.getRotation()) && getScale().equals(entity.getScale()) && getTransform().equals(entity.getTransform()) && getMovement() == entity.getMovement() && getCollision().equals(entity.getCollision()) && name.equals(entity.name) && componentID.equals(entity.componentID) && components.equals(entity.components);
+    }
+    public Object getControl() {
+        physic.setSpatial(this);
+        return physic;
+    }
+
+
     public enum MovementType {
         FORWARD("run"),
         BACK("back"),
@@ -211,8 +233,6 @@ public class Entity {
         }
     }
 
-    @Override
-    public String toString() {
-        return name;
-    }
+
+
 }

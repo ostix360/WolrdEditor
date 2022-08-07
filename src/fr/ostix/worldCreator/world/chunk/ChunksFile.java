@@ -1,6 +1,7 @@
 package fr.ostix.worldCreator.world.chunk;
 
 import fr.ostix.worldCreator.terrain.*;
+import fr.ostix.worldCreator.terrain.texture.*;
 import fr.ostix.worldCreator.toolBox.*;
 
 import java.io.*;
@@ -22,16 +23,14 @@ public class ChunksFile {
     public void export(){
         try (FileOutputStream fos = openWritableFile();
         FileChannel fc = fos.getChannel()) {
+            System.out.println("Exporting chunks... : " + x + "," + z);
             fc.position(0);
             for(Chunk c : chunks){
                 if(!c.isEmpty()){
                     c.export(fc);
                 }
             }
-            ByteBuffer buffer = ByteBuffer.allocate(1);
-            buffer.put((byte) 'c');
-            buffer.flip();
-            //fc.write(buffer);
+
         }catch(IOException e){
             e.printStackTrace();
         }
@@ -63,6 +62,11 @@ public class ChunksFile {
     }
 
     public Chunk load(int x,int z){
+        for (Chunk c : chunks) {
+            if (c.getX() == x && c.getZ() == z) {
+                return c;
+            }
+        }
         String[] chunksContent = this.content.split("\n");
         for (int i = 0; i < chunksContent.length; i++){
             StringBuilder sb = new StringBuilder();
@@ -78,7 +82,7 @@ public class ChunksFile {
         }
         //System.err.println("Chunk not found in file " + content);
         return this.addPart(new Chunk(x,z,new ArrayList<>()).
-                setTerrain(new Terrain(x,z,Config.TERRAIN_DEFAULT_PACK,Config.BLEND_MAP,"default")));
+                setTerrain(new Terrain(x,z,new TerrainTexturePack(Config.TERRAIN_DEFAULT_PACK),new TerrainTexture(Config.BLEND_MAP),"default")));
     }
 
     public Chunk addPart(Chunk chunk) {

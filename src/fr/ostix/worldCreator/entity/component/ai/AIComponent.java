@@ -1,6 +1,5 @@
 package fr.ostix.worldCreator.entity.component.ai;
 
-import com.flowpowered.react.math.*;
 import fr.ostix.worldCreator.entity.*;
 import fr.ostix.worldCreator.entity.component.*;
 import org.joml.*;
@@ -43,9 +42,9 @@ public class AIComponent extends Component {
 
         float dx = (float) (pos * Math.sin(Math.toRadians(e.getRotation().y())));
         float dz = (float) (pos * Math.cos(Math.toRadians(e.getRotation().y())));
-        e.getTorque().set(new Vector3(0, rotY, 0));
+//        e.getTorque().set(new Vector3(0, rotY, 0));
         e.increaseRotation(new Vector3f(0,rotY,0));
-        e.getForceToCenter().add(new Vector3(dx, 0, dz));
+//        e.getForceToCenter().add(new Vector3(dx, 0, dz));
     }
 
     private float generateRotation(float average, float errorMargin) {

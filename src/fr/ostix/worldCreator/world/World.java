@@ -1,6 +1,7 @@
 package fr.ostix.worldCreator.world;
 
-import com.flowpowered.react.math.*;
+import com.jme3.bullet.*;
+import com.jme3.bullet.collision.*;
 import fr.ostix.worldCreator.audio.*;
 import fr.ostix.worldCreator.core.Timer;
 import fr.ostix.worldCreator.core.*;
@@ -14,7 +15,6 @@ import fr.ostix.worldCreator.main.*;
 import fr.ostix.worldCreator.terrain.*;
 import fr.ostix.worldCreator.terrain.texture.*;
 import fr.ostix.worldCreator.toolBox.*;
-import fr.ostix.worldCreator.toolBox.interaction.*;
 import fr.ostix.worldCreator.water.*;
 import fr.ostix.worldCreator.world.chunk.*;
 import org.joml.*;
@@ -41,7 +41,8 @@ public class World {
     private MasterRenderer renderer;
     private boolean canAddEntity;
     private int timer = 0;
-    private CollisionSystem collisionSystem;
+
+    private final BulletAppState physics = new BulletAppState();;
     private static ChunkHandler chunkHandler;
     private boolean terIsMissing = true;
     private boolean threadStart = false;
@@ -52,20 +53,18 @@ public class World {
         World.terrains =  terrains;
         this.renderer = renderer;
         this.cam = cam;
-        chunkHandler = new ChunkHandler(cam,terrains, entities);
-        this.collisionSystem = new CollisionSystem();
+        chunkHandler = new ChunkHandler(cam,World.terrains, entities,this);
         this.mousePicker = new MousePicker(MasterRenderer.getProjectionMatrix(), cam, terrains);
-        this.collisionSystem.init(1 / 120f, entities, this);
-
+        physics.startPhysics();
     }
 
 
-    public static Entity addAABB(Vector3 bodyPosition, Vector3 size) {
-        Entity entity = new Entity(Config.CUBE, Maths.toVector3f(bodyPosition), new Vector3f(), 1, -1);
-        entity.setScale(Maths.toVector3f(size));
-        aabbs.add(entity);
-        return entity;
-    }
+//    public static Entity addAABB(Vector3 bodyPosition, Vector3 size) {
+//        Entity entity = new Entity(Config.CUBE, Maths.toVector3f(bodyPosition), new Vector3f(), 1, -1);
+//        entity.setScale(Maths.toVector3f(size));
+//        aabbs.add(entity);
+//        return entity;
+//    }
 
     public static void doAABBToRender() {
         chunkHandler.addAllEntities(aabbs);
@@ -79,7 +78,6 @@ public class World {
     public void remove(Entity e, boolean isFromCollisionSystem) {
         entities.remove(e);
         chunkHandler.remove(e);
-        if (!isFromCollisionSystem) collisionSystem.removeBody(e);
     }
 
     public void setEditionMode(EditionMode editionMode) {
@@ -115,11 +113,10 @@ public class World {
     }
 
     public void update() {
-        renderer.setEntities(chunkHandler.getEntities());
+        renderer.setEntities(entities);
 
-        terrains.clear();
-        terrains.putAll(chunkHandler.getChunkMap());
-        collisionSystem.update(chunkHandler.getEntities());
+//        terrains.clear();
+//        terrains.putAll(chunkHandler.getChunkMap());
 
         synchronized (entities){
             for (Entity entity : entities) {
@@ -155,15 +152,20 @@ public class World {
                 entityPicked.getScale().add(new Vector3f(GLCanvas.mouseDWheel * entityPicked.getScale().y() / 25f));
                 if (Input.keysMouse[GLFW_MOUSE_BUTTON_1] && canAddEntity) {
                     Entity clone = entityPicked.clone();
-                    entities.add(clone);
+
+                    System.out.println(entities.add(clone));
                     chunkHandler.addEntity(mousePicker.getCurrentChunk(),clone);
-                    collisionSystem.spawnBody(clone);
+                    //collisionSystem.spawnBody(clone);
+                    this.physics.getPhysicsSpace().add(clone);
+
                     canAddEntity = false;
                 }
             }
         } else if (editionMode.equals(EditionMode.ENTITY_PICK)) {
             if (mousePicker.getCurrentRay() != null) {
-                Entity e = collisionSystem.findEntityInRay(cam, mousePicker.getCurrentRay());
+                List<PhysicsRayTestResult> results = physics.getPhysicsSpace().rayTest(cam.getPosition(), mousePicker.getCurrentRay());
+
+                Entity e = (Entity) results.get(0).getCollisionObject().getUserObject(); //TODO collisionSystem.findEntityInRay(cam, mousePicker.getCurrentRay());
                 if (e != null) {
                     if (Input.keysMouse[GLFW_MOUSE_BUTTON_1]) {
                         frame.notifySelectedEntity(entityPicked = e);
@@ -268,7 +270,7 @@ public class World {
     }
 
     public void cleanup() {
-        collisionSystem.finish();
+        physics.stopPhysics();
     }
 
     public static float getTerrainHeight(float worldX, float worldZ) {
@@ -283,9 +285,9 @@ public class World {
     }
 
     public void setEntity(Entity entity) {
-        entities.remove(entityPicked);
+        if (entityPicked != null) entities.remove(entityPicked);
         entityPicked = entity;
-        entities.add(entity);
+        entities.add(entityPicked);
         if (entity.getModel().getMeshModel() == null) {
             Logger.err("The model of  " + entity + " is null");
         }
@@ -296,8 +298,12 @@ public class World {
         this.frame = mainFrame;
     }
 
+    public PhysicsSpace getPhysics() {
+        return physics.getPhysicsSpace();
+    }
+
     public void refreshCollisions() {
-        collisionSystem.refresh(new ArrayList<>(chunkHandler.getEntities()));
+        //TODO
     }
 
     public ChunkHandler getChunkManager() {

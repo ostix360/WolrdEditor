@@ -1,6 +1,5 @@
 package fr.ostix.worldCreator.entity;
 
-import com.flowpowered.react.math.*;
 import fr.ostix.worldCreator.graphics.model.*;
 import org.joml.*;
 
@@ -52,17 +51,17 @@ public class Player extends Entity {
     private void move() {
         checkInputs();
         super.increaseRotation(new Vector3f(0, this.currentTurnSpeed * 0.0023f, 0));
-        torque.set(new Vector3(0, this.currentTurnSpeed, 0));
+
         float distance = currentSpeed * 0.006f;
         float dx = (float) (distance * Math.sin(Math.toRadians(super.getRotation().y())));
         float dz = (float) (distance * Math.cos(Math.toRadians(super.getRotation().y())));
-        forceToCenter.set(new Vector3(dx, 0, dz));
+
         upwardsSpeed -= GRAVITY;
 
         if (upwardsSpeed <= -9.18f) {
             upwardsSpeed = -9.18f;
         }
-        forceToCenter.add(new Vector3(0, upwardsSpeed, 0));
+        //TODO
 
         this.upwardsSpeed = 0;
         //super.increasePosition(new Vector3f(dx, upwardsSpeed, dz));
