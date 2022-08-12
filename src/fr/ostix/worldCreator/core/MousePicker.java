@@ -23,6 +23,7 @@ public class MousePicker {
     private Terrain currentTerrain;
     private Chunk currentChunk;
 
+
     public MousePicker(Matrix4f projectionMatrix, Camera cam, Map<Vector2f, Chunk> terrains) {
         this.terrains = terrains;
         this.projectionMatrix = projectionMatrix;
@@ -117,6 +118,8 @@ public class MousePicker {
     }
 
     private Terrain getTerrain(float worldX, float worldZ) {
+        if (worldX < 0) worldX -= 100;
+        if (worldZ < 0) worldZ -= 100;
         int x = (int) (worldX / Terrain.getSIZE());
         int z = (int) (worldZ / Terrain.getSIZE());
         if (terrains.isEmpty()) {
@@ -135,6 +138,10 @@ public class MousePicker {
 
     public Vector3f getCurrentTerrainPoint() {
         return currentTerrainPoint;
+    }
+
+    public Vector3f getRayEndPoint() {
+        return getPointOnRay(calculateMouseRay(),5000f);
     }
 
     public Vector3f getCurrentRay() {

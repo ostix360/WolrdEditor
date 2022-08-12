@@ -85,12 +85,13 @@ public class MainFrame {
                     if (signalTerminate.tryAcquire(10, TimeUnit.MILLISECONDS)) {
                         signalTerminated.release();
                         canvas.doDisposeCanvas();
-                        ChunkHandler.stopChunkHandler();
+                        world.cleanup();
                         return;
                     }
                 } catch (Exception e) {
-                    System.err.println("Terminate without cleaning!");
                     e.printStackTrace();
+                    System.err.println("Terminate without cleaning!");
+                    world.cleanup();
                     System.exit(-1);
                 }
             }
@@ -190,7 +191,12 @@ public class MainFrame {
                 if (m.getMeshModel() == null) {
                     Logger.err("The model of  " + contents[0] + " is null");
                 }
-                Entity e = new Entity(m, contents[0], contents[2],Integer.parseInt(contents[1]));
+                int id = Integer.parseInt(contents[1]);
+                if (id == 0){
+                    Logger.log("Cannot add  a player in the world");
+                    return;
+                }
+                Entity e = new Entity(m, contents[0], contents[2],id);
                 LoadComponents.loadComponents(ResourcePackLoader.getComponentsByID().get(Integer.valueOf(contents[2])), e);
                 if (e.getModel() == null) {
                     Logger.err("The model of  " + e + " is null");

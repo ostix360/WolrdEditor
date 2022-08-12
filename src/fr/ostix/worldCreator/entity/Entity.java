@@ -62,7 +62,7 @@ public class Entity {
         this.components = entity.components;
         this.textureIndex = entity.textureIndex;
         this.componentID = entity.componentID;
-        this.collision = entity.collision;
+        this.collision = new CollisionComponent(this,entity.getCollision().getProp());
         this.id = entity.id;
         this.movement = MovementType.STATIC;
         this.picking = entity.picking;
@@ -212,8 +212,8 @@ public class Entity {
         return textureIndex == entity.textureIndex && isPicking() == entity.isPicking() && getId() == entity.getId() && getModel().equals(entity.getModel()) && getPosition().equals(entity.getPosition()) && getRotation().equals(entity.getRotation()) && getScale().equals(entity.getScale()) && getTransform().equals(entity.getTransform()) && getMovement() == entity.getMovement() && getCollision().equals(entity.getCollision()) && name.equals(entity.name) && componentID.equals(entity.componentID) && components.equals(entity.components);
     }
     public Object getControl() {
-        physic.setSpatial(this);
-        return physic;
+        collision.getPhysic().setSpatial(this);
+        return collision.getPhysic();
     }
 
 

@@ -62,35 +62,31 @@ public class ChunkHandler {
                         chunksFileList.get(new Vector2f(playerChunkX + x, playerChunkZ + z)).load();
                     }
 
-                    if ((playerChunkZ - z) > 0) {
-                        if (!(chunksFileList.containsKey(new Vector2f(playerChunkX + x, playerChunkZ - z)))) {
-                            chunksFileList.put(new Vector2f(playerChunkX + x, playerChunkZ - z), new ChunksFile(playerChunkX + x, playerChunkZ - z));
-                            chunksFileList.get(new Vector2f(playerChunkX + x, playerChunkZ - z)).load();
-                        }
-
-                        if (!(chunksFileList.containsKey(new Vector2f(playerChunkX, playerChunkZ - z)))) {
-                            chunksFileList.put(new Vector2f(playerChunkX, playerChunkZ - z), new ChunksFile(playerChunkX, playerChunkZ - z));
-                            chunksFileList.get(new Vector2f(playerChunkX, playerChunkZ - z)).load();
-                        }
-
-                        if ((playerChunkX - x) > 0) {
-                            if (!(chunksFileList.containsKey(new Vector2f(playerChunkX - x, playerChunkZ - z)))) {
-                                chunksFileList.put(new Vector2f(playerChunkX - x, playerChunkZ - z), new ChunksFile(playerChunkX - x, playerChunkZ - z));
-                                chunksFileList.get(new Vector2f(playerChunkX - x, playerChunkZ - z)).load();
-                            }
-                        }
+                    if (!(chunksFileList.containsKey(new Vector2f(playerChunkX + x, playerChunkZ - z)))) {
+                        chunksFileList.put(new Vector2f(playerChunkX + x, playerChunkZ - z), new ChunksFile(playerChunkX + x, playerChunkZ - z));
+                        chunksFileList.get(new Vector2f(playerChunkX + x, playerChunkZ - z)).load();
                     }
 
-                    if ((playerChunkX - x) > 0) {
-                        if (!(chunksFileList.containsKey(new Vector2f(playerChunkX - x, playerChunkZ + z)))) {
-                            chunksFileList.put(new Vector2f(playerChunkX - x, playerChunkZ + z), new ChunksFile(playerChunkX - x, playerChunkZ + z));
-                            chunksFileList.get(new Vector2f(playerChunkX - x, playerChunkZ + z)).load();
-                        }
-                        if (!(chunksFileList.containsKey(new Vector2f(playerChunkX - x, playerChunkZ)))) {
-                            chunksFileList.put(new Vector2f(playerChunkX - x, playerChunkZ), new ChunksFile(playerChunkX - x, playerChunkZ));
-                            chunksFileList.get(new Vector2f(playerChunkX - x, playerChunkZ)).load();
-                        }
+                    if (!(chunksFileList.containsKey(new Vector2f(playerChunkX, playerChunkZ - z)))) {
+                        chunksFileList.put(new Vector2f(playerChunkX, playerChunkZ - z), new ChunksFile(playerChunkX, playerChunkZ - z));
+                        chunksFileList.get(new Vector2f(playerChunkX, playerChunkZ - z)).load();
                     }
+
+                    if (!(chunksFileList.containsKey(new Vector2f(playerChunkX - x, playerChunkZ - z)))) {
+                        chunksFileList.put(new Vector2f(playerChunkX - x, playerChunkZ - z), new ChunksFile(playerChunkX - x, playerChunkZ - z));
+                        chunksFileList.get(new Vector2f(playerChunkX - x, playerChunkZ - z)).load();
+                    }
+
+
+                    if (!(chunksFileList.containsKey(new Vector2f(playerChunkX - x, playerChunkZ + z)))) {
+                        chunksFileList.put(new Vector2f(playerChunkX - x, playerChunkZ + z), new ChunksFile(playerChunkX - x, playerChunkZ + z));
+                        chunksFileList.get(new Vector2f(playerChunkX - x, playerChunkZ + z)).load();
+                    }
+                    if (!(chunksFileList.containsKey(new Vector2f(playerChunkX - x, playerChunkZ)))) {
+                        chunksFileList.put(new Vector2f(playerChunkX - x, playerChunkZ), new ChunksFile(playerChunkX - x, playerChunkZ));
+                        chunksFileList.get(new Vector2f(playerChunkX - x, playerChunkZ)).load();
+                    }
+
                 }
             }
             ChunksFile currentChunkFile;
@@ -154,7 +150,7 @@ public class ChunkHandler {
 
             playerChunkX = (int) Math.floor(cam.getPosition().x() / Terrain.getSIZE());
             playerChunkZ = (int) Math.floor(cam.getPosition().z() / Terrain.getSIZE());
-            Terrain.setWorldChunk(chunkList);
+            Terrain.setWorldChunk(worldChunk);
             for (int x = 0; x < cam.viewDistance; x++) { // X - Axis iteration
                 for (int z = 0; z < cam.viewDistance; z++) { // Z - Axis iteration
                     loadChunks(playerChunkX, playerChunkZ, x, z);
@@ -185,57 +181,105 @@ public class ChunkHandler {
     private void unLoadChunks(int playerChunkX, int playerChunkZ, int xMin, int zMin, int xMax, int zMax) {
         Chunk chunk;
 
-        chunk = chunkList.remove(new Vector2f(playerChunkX, playerChunkZ + zMax + 1));
-        if (chunk != null) world.getPhysics().remove(chunk);
+        chunk = worldChunk.remove(new Vector2f(playerChunkX, playerChunkZ + zMax + 1));
+        if (chunk != null) {
+            world.getPhysics().remove(chunk);
+            entities.removeAll(chunk.getEntities());
+        }
 
-        chunk = chunkList.remove(new Vector2f(playerChunkX, playerChunkZ + zMin - 1));
-        if (chunk != null) world.getPhysics().remove(chunk);
+        chunk = worldChunk.remove(new Vector2f(playerChunkX, playerChunkZ + zMin - 1));
+        if (chunk != null) {
+            world.getPhysics().remove(chunk);
+            entities.removeAll(chunk.getEntities());
+        }
 
-        chunk = chunkList.remove(new Vector2f(playerChunkX + xMax + 1, playerChunkZ));
-        if (chunk != null) world.getPhysics().remove(chunk);
+        chunk = worldChunk.remove(new Vector2f(playerChunkX + xMax + 1, playerChunkZ));
+        if (chunk != null) {
+            world.getPhysics().remove(chunk);
+            entities.removeAll(chunk.getEntities());
+        }
 
-        chunk = chunkList.remove(new Vector2f(playerChunkX + xMin - 1, playerChunkZ));
-        if (chunk != null) world.getPhysics().remove(chunk);
+        chunk = worldChunk.remove(new Vector2f(playerChunkX + xMin - 1, playerChunkZ));
+        if (chunk != null) {
+            world.getPhysics().remove(chunk);
+            entities.removeAll(chunk.getEntities());
+        }
 
 
-        chunk = chunkList.remove(new Vector2f(playerChunkX + xMax + 1, playerChunkZ + zMax + 1));
-        if (chunk != null) world.getPhysics().remove(chunk);
+        chunk = worldChunk.remove(new Vector2f(playerChunkX + xMax + 1, playerChunkZ + zMax + 1));
+        if (chunk != null) {
+            world.getPhysics().remove(chunk);
+            entities.removeAll(chunk.getEntities());
+        }
 
-        chunk = chunkList.remove(new Vector2f(playerChunkX + xMin - 1, playerChunkZ + zMin - 1));
-        if (chunk != null) world.getPhysics().remove(chunk);
+        chunk = worldChunk.remove(new Vector2f(playerChunkX + xMin - 1, playerChunkZ + zMin - 1));
+        if (chunk != null) {
+            world.getPhysics().remove(chunk);
+            entities.removeAll(chunk.getEntities());
+        }
 
-        chunk = chunkList.remove(new Vector2f(playerChunkX + xMax + 1, playerChunkZ + zMin - 1));
-        if (chunk != null) world.getPhysics().remove(chunk);
+        chunk = worldChunk.remove(new Vector2f(playerChunkX + xMax + 1, playerChunkZ + zMin - 1));
+        if (chunk != null) {
+            world.getPhysics().remove(chunk);
+            entities.removeAll(chunk.getEntities());
+        }
 
-        chunk = chunkList.remove(new Vector2f(playerChunkX + xMin - 1, playerChunkZ + zMax + 1));
-        if (chunk != null) world.getPhysics().remove(chunk);
+        chunk = worldChunk.remove(new Vector2f(playerChunkX + xMin - 1, playerChunkZ + zMax + 1));
+        if (chunk != null) {
+            world.getPhysics().remove(chunk);
+            entities.removeAll(chunk.getEntities());
+        }
 
         for (int x = 0; x < cam.viewDistance + 1; x++) {
-            chunk = chunkList.remove(new Vector2f(playerChunkX + x, playerChunkZ + zMax + 1));
-            if (chunk != null) world.getPhysics().remove(chunk);
+            chunk = worldChunk.remove(new Vector2f(playerChunkX + x, playerChunkZ + zMax + 1));
+            if (chunk != null) {
+                world.getPhysics().remove(chunk);
+                entities.removeAll(chunk.getEntities());
+            }
 
-            chunk = chunkList.remove(new Vector2f(playerChunkX - x, playerChunkZ + zMax + 1));
-            if (chunk != null) world.getPhysics().remove(chunk);
+            chunk = worldChunk.remove(new Vector2f(playerChunkX - x, playerChunkZ + zMax + 1));
+            if (chunk != null) {
+                world.getPhysics().remove(chunk);
+                entities.removeAll(chunk.getEntities());
+            }
 
-            chunk = chunkList.remove(new Vector2f(playerChunkX + x, playerChunkZ + zMin - 1));
-            if (chunk != null) world.getPhysics().remove(chunk);
+            chunk = worldChunk.remove(new Vector2f(playerChunkX + x, playerChunkZ + zMin - 1));
+            if (chunk != null) {
+                world.getPhysics().remove(chunk);
+                entities.removeAll(chunk.getEntities());
+            }
 
-            chunk = chunkList.remove(new Vector2f(playerChunkX - x, playerChunkZ + zMin - 1));
-            if (chunk != null) world.getPhysics().remove(chunk);
+            chunk = worldChunk.remove(new Vector2f(playerChunkX - x, playerChunkZ + zMin - 1));
+            if (chunk != null) {
+                world.getPhysics().remove(chunk);
+                entities.removeAll(chunk.getEntities());
+            }
         }
 
         for (int z = 0; z < cam.viewDistance + 1; z++) {
-            chunk = chunkList.remove(new Vector2f(playerChunkX + xMax + 1, playerChunkZ + z));
-            if (chunk != null) world.getPhysics().remove(chunk);
+            chunk = worldChunk.remove(new Vector2f(playerChunkX + xMax + 1, playerChunkZ + z));
+            if (chunk != null) {
+                world.getPhysics().remove(chunk);
+                entities.removeAll(chunk.getEntities());
+            }
 
-            chunk = chunkList.remove(new Vector2f(playerChunkX + xMax + 1, playerChunkZ - z));
-            if (chunk != null) world.getPhysics().remove(chunk);
+            chunk = worldChunk.remove(new Vector2f(playerChunkX + xMax + 1, playerChunkZ - z));
+            if (chunk != null) {
+                world.getPhysics().remove(chunk);
+                entities.removeAll(chunk.getEntities());
+            }
 
-            chunk = chunkList.remove(new Vector2f(playerChunkX + xMin - 1, playerChunkZ + z));
-            if (chunk != null) world.getPhysics().remove(chunk);
+            chunk = worldChunk.remove(new Vector2f(playerChunkX + xMin - 1, playerChunkZ + z));
+            if (chunk != null) {
+                world.getPhysics().remove(chunk);
+                entities.removeAll(chunk.getEntities());
+            }
 
-            chunk =  chunkList.remove(new Vector2f(playerChunkX + xMin - 1, playerChunkZ - z));
-            if (chunk != null) world.getPhysics().remove(chunk);
+            chunk = worldChunk.remove(new Vector2f(playerChunkX + xMin - 1, playerChunkZ - z));
+            if (chunk != null) {
+                world.getPhysics().remove(chunk);
+                entities.removeAll(chunk.getEntities());
+            }
         }
     }
 
@@ -247,11 +291,11 @@ public class ChunkHandler {
 
         int chunkFileIndexZPositive = (playerChunkZ + z) / 3;
 
-//        if (!(chunkList.containsKey(new Vector2f(playerChunkX, playerChunkZ)))) {
+//        if (!(worldChunk.containsKey(new Vector2f(playerChunkX, playerChunkZ)))) {
 //            chunkFileIndexX = playerChunkX / 3;
 //            chunkFileIndexZ = playerChunkZ / 3;
 //            Chunk chunk = chunksFileList.get(new Vector2f(chunkFileIndexX, chunkFileIndexZ)).load(playerChunkX, playerChunkZ);
-//            chunkList.put(new Vector2f(playerChunkX, playerChunkZ), chunk); // Create new chunk
+//            worldChunk.put(new Vector2f(playerChunkX, playerChunkZ), chunk); // Create new chunk
 //        }
 
 
@@ -261,6 +305,7 @@ public class ChunkHandler {
             Chunk chunk = chunksFileList.get(new Vector2f(chunkFileIndexX, chunkFileIndexZ)).load(playerChunkX + x, playerChunkZ);
             worldChunk.put(new Vector2f(playerChunkX + x, playerChunkZ), chunk); // Create new chunk
             entitiesChunk.put(chunk, chunk.getEntities());
+            entities.addAll(chunk.getEntities());
             world.getPhysics().add(chunk);
         }
 
@@ -270,6 +315,7 @@ public class ChunkHandler {
             Chunk chunk = chunksFileList.get(new Vector2f(chunkFileIndexX, chunkFileIndexZ)).load(playerChunkX, playerChunkZ + z);
             worldChunk.put(new Vector2f(playerChunkX, playerChunkZ + z), chunk); // Create new chunk
             entitiesChunk.put(chunk, chunk.getEntities());
+            entities.addAll(chunk.getEntities());
             world.getPhysics().add(chunk);
         }
 
@@ -280,56 +326,61 @@ public class ChunkHandler {
                     .load(playerChunkX + x, playerChunkZ + z);
             worldChunk.put(new Vector2f(playerChunkX + x, playerChunkZ + z), chunk); // Create new chunk
             entitiesChunk.put(chunk, chunk.getEntities());
+            entities.addAll(chunk.getEntities());
             world.getPhysics().add(chunk);
         }
-        if ((playerChunkZ - z) > 0) {
-            if (!(worldChunk.containsKey(new Vector2f(playerChunkX + x, playerChunkZ - z)))) {
-                chunkFileIndexX = chunkFileIndexXPositive;
-                chunkFileIndexZ = (playerChunkZ - z) / 3;
-                Chunk chunk = chunksFileList.get(new Vector2f(chunkFileIndexX, chunkFileIndexZ)).load(playerChunkX + x, playerChunkZ - z);
-                worldChunk.put(new Vector2f(playerChunkX + x, playerChunkZ - z), chunk); // Create a new chunk
-                entitiesChunk.put(chunk, chunk.getEntities());
-                world.getPhysics().add(chunk);
-            }
 
-            if (!(worldChunk.containsKey(new Vector2f(playerChunkX, playerChunkZ - z)))) {
-                chunkFileIndexX = playerChunkX / 3;
-                chunkFileIndexZ = (playerChunkZ - z) / 3;
-                Chunk chunk = chunksFileList.get(new Vector2f(chunkFileIndexX, chunkFileIndexZ)).load(playerChunkX, playerChunkZ - z);
-                worldChunk.put(new Vector2f(playerChunkX, playerChunkZ - z), chunk); // Create a new chunk
-                entitiesChunk.put(chunk, chunk.getEntities());
-                world.getPhysics().add(chunk);
-            }
+        if (!(worldChunk.containsKey(new Vector2f(playerChunkX + x, playerChunkZ - z)))) {
+            chunkFileIndexX = chunkFileIndexXPositive;
+            chunkFileIndexZ = (playerChunkZ - z) / 3;
+            Chunk chunk = chunksFileList.get(new Vector2f(chunkFileIndexX, chunkFileIndexZ)).load(playerChunkX + x, playerChunkZ - z);
+            worldChunk.put(new Vector2f(playerChunkX + x, playerChunkZ - z), chunk); // Create a new chunk
+            entitiesChunk.put(chunk, chunk.getEntities());
+            entities.addAll(chunk.getEntities());
+            world.getPhysics().add(chunk);
+        }
 
-            if ((playerChunkX - x) > 0) {
-                if (!(worldChunk.containsKey(new Vector2f(playerChunkX - x, playerChunkZ - z)))) {
-                    chunkFileIndexX = (playerChunkX - x) / 3;
-                    chunkFileIndexZ = (playerChunkZ - z) / 3;
-                    Chunk chunk = chunksFileList.get(new Vector2f(chunkFileIndexX, chunkFileIndexZ)).load(playerChunkX - x, playerChunkZ - z);
-                    worldChunk.put(new Vector2f(playerChunkX - x, playerChunkZ - z), chunk); // Create new chunk
-                    entitiesChunk.put(chunk, chunk.getEntities());
-                    world.getPhysics().add(chunk);
-                }
-            }
+        if (!(worldChunk.containsKey(new Vector2f(playerChunkX, playerChunkZ - z)))) {
+            chunkFileIndexX = playerChunkX / 3;
+            chunkFileIndexZ = (playerChunkZ - z) / 3;
+            Chunk chunk = chunksFileList.get(new Vector2f(chunkFileIndexX, chunkFileIndexZ)).load(playerChunkX, playerChunkZ - z);
+            worldChunk.put(new Vector2f(playerChunkX, playerChunkZ - z), chunk); // Create a new chunk
+            entitiesChunk.put(chunk, chunk.getEntities());
+            entities.addAll(chunk.getEntities());
+            world.getPhysics().add(chunk);
         }
-        if ((playerChunkX - x) > 0) {
-            if (!(worldChunk.containsKey(new Vector2f(playerChunkX - x, playerChunkZ + z)))) {
-                chunkFileIndexX = (playerChunkX - x) / 3;
-                chunkFileIndexZ = chunkFileIndexZPositive;
-                Chunk chunk = chunksFileList.get(new Vector2f(chunkFileIndexX, chunkFileIndexZ)).load(playerChunkX - x, playerChunkZ + z);
-                worldChunk.put(new Vector2f(playerChunkX - x, playerChunkZ + z), chunk); // Create new chunk
-                entitiesChunk.put(chunk, chunk.getEntities());
-                world.getPhysics().add(chunk);
-            }
-            if (!(worldChunk.containsKey(new Vector2f(playerChunkX - x, playerChunkZ)))) {
-                chunkFileIndexX = (playerChunkX - x) / 3;
-                chunkFileIndexZ = playerChunkZ / 3;
-                Chunk chunk = chunksFileList.get(new Vector2f(chunkFileIndexX, chunkFileIndexZ)).load(playerChunkX - x, playerChunkZ);
-                worldChunk.put(new Vector2f(playerChunkX - x, playerChunkZ), chunk); // Create new chunk
-                entitiesChunk.put(chunk, chunk.getEntities());
-                world.getPhysics().add(chunk);
-            }
+
+
+        if (!(worldChunk.containsKey(new Vector2f(playerChunkX - x, playerChunkZ - z)))) {
+            chunkFileIndexX = (playerChunkX - x) / 3;
+            chunkFileIndexZ = (playerChunkZ - z) / 3;
+            Chunk chunk = chunksFileList.get(new Vector2f(chunkFileIndexX, chunkFileIndexZ)).load(playerChunkX - x, playerChunkZ - z);
+            worldChunk.put(new Vector2f(playerChunkX - x, playerChunkZ - z), chunk); // Create new chunk
+            entitiesChunk.put(chunk, chunk.getEntities());
+            entities.addAll(chunk.getEntities());
+            world.getPhysics().add(chunk);
         }
+
+
+        if (!(worldChunk.containsKey(new Vector2f(playerChunkX - x, playerChunkZ + z)))) {
+            chunkFileIndexX = (playerChunkX - x) / 3;
+            chunkFileIndexZ = chunkFileIndexZPositive;
+            Chunk chunk = chunksFileList.get(new Vector2f(chunkFileIndexX, chunkFileIndexZ)).load(playerChunkX - x, playerChunkZ + z);
+            worldChunk.put(new Vector2f(playerChunkX - x, playerChunkZ + z), chunk); // Create new chunk
+            entitiesChunk.put(chunk, chunk.getEntities());
+            entities.addAll(chunk.getEntities());
+            world.getPhysics().add(chunk);
+        }
+        if (!(worldChunk.containsKey(new Vector2f(playerChunkX - x, playerChunkZ)))) {
+            chunkFileIndexX = (playerChunkX - x) / 3;
+            chunkFileIndexZ = playerChunkZ / 3;
+            Chunk chunk = chunksFileList.get(new Vector2f(chunkFileIndexX, chunkFileIndexZ)).load(playerChunkX - x, playerChunkZ);
+            worldChunk.put(new Vector2f(playerChunkX - x, playerChunkZ), chunk); // Create new chunk
+            entitiesChunk.put(chunk, chunk.getEntities());
+            entities.addAll(chunk.getEntities());
+            world.getPhysics().add(chunk);
+        }
+
     }
 
     public Map<Vector2f, Chunk> getChunkMap() {
@@ -364,6 +415,7 @@ public class ChunkHandler {
                         entitiesChunk.get(c).remove(e);
                     }
                 }
+
             }
         }
     }

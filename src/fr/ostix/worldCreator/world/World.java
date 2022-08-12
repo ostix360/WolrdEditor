@@ -23,13 +23,14 @@ import java.awt.event.*;
 import java.lang.*;
 import java.lang.Math;
 import java.util.*;
+import java.util.concurrent.*;
 
 import static org.lwjgl.glfw.GLFW.*;
 
 public class World {
     private static Map<Vector2f, Chunk> terrains = null;
     private final List<WaterTile> waterTiles = new ArrayList<>();
-    private static final List<Entity> entities = Collections.synchronizedList(new ArrayList<>());
+    private static final List<Entity> entities = new CopyOnWriteArrayList<>();
     private static final List<Entity> aabbs = new ArrayList<>();
     private final MousePicker mousePicker;
     private EditionMode editionMode = EditionMode.TERRAIN;
@@ -78,6 +79,7 @@ public class World {
     public void remove(Entity e, boolean isFromCollisionSystem) {
         entities.remove(e);
         chunkHandler.remove(e);
+        physics.getPhysicsSpace().remove(e);
     }
 
     public void setEditionMode(EditionMode editionMode) {
@@ -113,6 +115,9 @@ public class World {
     }
 
     public void update() {
+        if (!ResourcePackLoader.isLoaded()){
+            return;
+        }
         renderer.setEntities(entities);
 
 //        terrains.clear();
@@ -163,17 +168,20 @@ public class World {
             }
         } else if (editionMode.equals(EditionMode.ENTITY_PICK)) {
             if (mousePicker.getCurrentRay() != null) {
-                List<PhysicsRayTestResult> results = physics.getPhysicsSpace().rayTest(cam.getPosition(), mousePicker.getCurrentRay());
 
-                Entity e = (Entity) results.get(0).getCollisionObject().getUserObject(); //TODO collisionSystem.findEntityInRay(cam, mousePicker.getCurrentRay());
-                if (e != null) {
-                    if (Input.keysMouse[GLFW_MOUSE_BUTTON_1]) {
-                        frame.notifySelectedEntity(entityPicked = e);
+                List<PhysicsRayTestResult> results = physics.getPhysicsSpace().rayTest(cam.getPosition(), mousePicker.getRayEndPoint());
+                if (results.size() > 0) {
+                    Logger.log("Ray catch " + results.size() + " results");
+                    Entity e = (Entity) results.get(0).getCollisionObject().getUserObject(); //TODO collisionSystem.findEntityInRay(cam, mousePicker.getCurrentRay());
+                    if (e != null) {
+                        if (Input.keysMouse[GLFW_MOUSE_BUTTON_1]) {
+                            frame.notifySelectedEntity(entityPicked = e);
+                        }
+                        e.setPicking(true);
                     }
-                    e.setPicking(true);
-                }
-                if (entityPicked != null) {
-                    entityPicked.setPicking(true);
+                    if (entityPicked != null) {
+                        entityPicked.setPicking(true);
+                    }
                 }
             }
         }
@@ -271,6 +279,7 @@ public class World {
 
     public void cleanup() {
         physics.stopPhysics();
+        ChunkHandler.stopChunkHandler();
     }
 
     public static float getTerrainHeight(float worldX, float worldZ) {

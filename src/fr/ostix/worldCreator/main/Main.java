@@ -45,7 +45,7 @@ public class Main {
         readConfig();
         AudioManager.init(AL11.AL_EXPONENT_DISTANCE);
         MasterRenderer renderer = new MasterRenderer();
-        Transform playerTransform = new Transform(new Vector3f(2000,0,2000),new Vector3f(0,0,0),1);
+        Transform playerTransform = new Transform(new Vector3f(0,0,0),new Vector3f(0,0,0),1);
         Camera cam = new Camera(playerTransform);
         Workspace workspace = new Workspace();
         renderer.initToRender(waterTiles,terrains,lights);

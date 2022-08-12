@@ -8,16 +8,17 @@ import java.io.*;
 import java.nio.*;
 import java.nio.channels.*;
 import java.util.*;
+import java.util.concurrent.*;
 
 public class ChunksFile {
-    private List<Chunk> chunks;
+    private final List<Chunk> chunks;
     private int x,z;
     private String content;
 
     public ChunksFile(int x, int z) {
         this.x = x;
         this.z = z;
-        chunks = new ArrayList<>();
+        chunks = new CopyOnWriteArrayList<>();
     }
 
     public void export(){
