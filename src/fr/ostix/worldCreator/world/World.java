@@ -158,7 +158,7 @@ public class World {
                 if (Input.keysMouse[GLFW_MOUSE_BUTTON_1] && canAddEntity) {
                     Entity clone = entityPicked.clone();
 
-                    System.out.println(entities.add(clone));
+                    entities.add(clone);
                     chunkHandler.addEntity(mousePicker.getCurrentChunk(),clone);
                     //collisionSystem.spawnBody(clone);
                     this.physics.getPhysicsSpace().add(clone);
@@ -171,7 +171,6 @@ public class World {
 
                 List<PhysicsRayTestResult> results = physics.getPhysicsSpace().rayTest(cam.getPosition(), mousePicker.getRayEndPoint());
                 if (results.size() > 0) {
-                    Logger.log("Ray catch " + results.size() + " results");
                     Entity e = (Entity) results.get(0).getCollisionObject().getUserObject(); //TODO collisionSystem.findEntityInRay(cam, mousePicker.getCurrentRay());
                     if (e != null) {
                         if (Input.keysMouse[GLFW_MOUSE_BUTTON_1]) {

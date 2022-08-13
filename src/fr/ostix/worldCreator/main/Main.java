@@ -105,6 +105,7 @@ public class Main {
         TerrainTexture gt = new TerrainTexture(gTexture.getTexture().getId());
         TerrainTexture bt = new TerrainTexture(bTexture.getTexture().getId());
         TerrainTexture blendt = new TerrainTexture(blendRequest.getTexture().getId());
+        blendt.setName("blendMap");
 
         TerrainTexturePack tp = new TerrainTexturePack(backt,rt,gt,bt);
         Config.BLEND_MAP = blendt;

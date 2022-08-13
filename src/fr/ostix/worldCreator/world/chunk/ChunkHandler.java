@@ -396,7 +396,7 @@ public class ChunkHandler {
     }
 
     public void addEntity(Chunk c, Entity entityPicked) {
-        entitiesChunk.get(c).add(entityPicked);
+//        entitiesChunk.get(c).add(entityPicked);
         c.getEntities().add(entityPicked);
     }
 

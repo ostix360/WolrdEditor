@@ -37,7 +37,7 @@ public class TerrainRenderer {
 
         for (Chunk chunk : terrains.values()) {
             Terrain ter = chunk.getTerrain();
-            if (ter.getModel() == null) {
+            if (ter.getModel() == null || ter.getModel().getVAO() == null) {
                 ter.setModel();
                 continue;
             }
