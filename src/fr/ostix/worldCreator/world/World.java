@@ -43,18 +43,20 @@ public class World {
     private boolean canAddEntity;
     private int timer = 0;
 
-    private final BulletAppState physics = new BulletAppState();;
+    private final BulletAppState physics = new BulletAppState();
+    ;
     private static ChunkHandler chunkHandler;
     private boolean terIsMissing = true;
     private boolean threadStart = false;
 
     private static final Color FILTER = new Color(0.3f, 0.3f, 0.3f);
+    private boolean chunkRunning = false;
 
     public World(MasterRenderer renderer, Map<Vector2f, Chunk> terrains, Camera cam) {
-        World.terrains =  terrains;
+        World.terrains = terrains;
         this.renderer = renderer;
         this.cam = cam;
-        chunkHandler = new ChunkHandler(cam,World.terrains, entities,this);
+        chunkHandler = new ChunkHandler(cam, World.terrains, entities, this);
         this.mousePicker = new MousePicker(MasterRenderer.getProjectionMatrix(), cam, terrains);
         physics.startPhysics();
     }
@@ -76,14 +78,15 @@ public class World {
         return FILTER.getVec3f();
     }
 
-    public void remove(Entity e, boolean isFromCollisionSystem) {
-        entities.remove(e);
-        chunkHandler.remove(e);
-        physics.getPhysicsSpace().remove(e);
+    public void remove(Entity e) {
+        if (entities.remove(e)) {
+            chunkHandler.remove(e);
+            physics.getPhysicsSpace().remove(e);
+        }
     }
 
     public void setEditionMode(EditionMode editionMode) {
-        if(editionMode.equals(this.editionMode)){
+        if (editionMode.equals(this.editionMode)) {
             return;
         }
         this.editionMode = editionMode;
@@ -108,14 +111,14 @@ public class World {
                     if (entityPicked.getModel() == null) {
                         Logger.err("The model of  " + entityPicked + " is null");
                     }
-                    chunkHandler.addEntity(mousePicker.getCurrentChunk(),entityPicked);
+                    chunkHandler.addEntity(mousePicker.getCurrentChunk(), entityPicked);
                 }
             }
         }
     }
 
     public void update() {
-        if (!ResourcePackLoader.isLoaded()){
+        if (!ResourcePackLoader.isLoaded()) {
             return;
         }
         renderer.setEntities(entities);
@@ -123,11 +126,11 @@ public class World {
 //        terrains.clear();
 //        terrains.putAll(chunkHandler.getChunkMap());
 
-        synchronized (entities){
-            for (Entity entity : entities) {
-                entity.update();
-            }
+
+        for (Entity entity : entities) {
+            entity.update();
         }
+
 
         if (!canAddEntity) {
             timer++;
@@ -159,7 +162,7 @@ public class World {
                     Entity clone = entityPicked.clone();
 
                     entities.add(clone);
-                    chunkHandler.addEntity(mousePicker.getCurrentChunk(),clone);
+                    chunkHandler.addEntity(mousePicker.getCurrentChunk(), clone);
                     //collisionSystem.spawnBody(clone);
                     this.physics.getPhysicsSpace().add(clone);
 
@@ -168,37 +171,42 @@ public class World {
             }
         } else if (editionMode.equals(EditionMode.ENTITY_PICK)) {
             if (mousePicker.getCurrentRay() != null) {
-
                 List<PhysicsRayTestResult> results = physics.getPhysicsSpace().rayTest(cam.getPosition(), mousePicker.getRayEndPoint());
                 if (results.size() > 0) {
                     Entity e = (Entity) results.get(0).getCollisionObject().getUserObject(); //TODO collisionSystem.findEntityInRay(cam, mousePicker.getCurrentRay());
                     if (e != null) {
                         if (Input.keysMouse[GLFW_MOUSE_BUTTON_1]) {
                             frame.notifySelectedEntity(entityPicked = e);
+                            e.setPicking(true);
                         }
                         e.setPicking(true);
                     }
-                    if (entityPicked != null) {
-                        entityPicked.setPicking(true);
-                    }
+
                 }
             }
+            if (entityPicked != null) {
+                entityPicked.setPicking(true);
+            }
         }
-        if(ResourcePackLoader.isLoaded()){
+        if (ResourcePackLoader.isLoaded()) {
             updateChunks();
         }
 
     }
 
-
+    private int t = 0;
     public void updateChunks() { // Update all the chunks
         notifyTerrainResourcesMissing();
-        if(!terIsMissing) {
-            chunkHandler.run();
+        if (!terIsMissing) {
+            t++;
+            if (t > 20) {
+                chunkHandler.run();
+                t = 0;
+            }
         }
     }
 
-    public void notifyTerrainResourcesMissing(){
+    public void notifyTerrainResourcesMissing() {
         Thread t = new Thread(() -> {
             threadStart = true;
             while (Config.TERRAIN_DEFAULT_PACK == null || Config.TERRAIN_DEFAULT_PACK.getBackgroundTexture() == null) {
@@ -235,7 +243,7 @@ public class World {
             threadStart = false;
         });
         terIsMissing = Config.TERRAIN_DEFAULT_PACK == null || Config.TERRAIN_DEFAULT_PACK.getBackgroundTexture() == null;
-        if (terIsMissing && !threadStart){
+        if (terIsMissing && !threadStart) {
             t.start();
         }
     }
@@ -270,7 +278,7 @@ public class World {
         long time = System.nanoTime();
         for (int x1 = xCoords; x1 < xCoords + x; x1++) {
             for (int z1 = zCoords; z1 < zCoords + z; z1++) {
-                terrains.put(new Vector2f(x1,z1),new Chunk(x1,z1,new ArrayList<>()).setTerrain(new Terrain(x1, z1, new TerrainTexturePack(Config.TERRAIN_DEFAULT_PACK), new TerrainTexture(Config.BLEND_MAP), "default")));
+                terrains.put(new Vector2f(x1, z1), new Chunk(x1, z1, new ArrayList<>()).setTerrain(new Terrain(x1, z1, new TerrainTexturePack(Config.TERRAIN_DEFAULT_PACK), new TerrainTexture(Config.BLEND_MAP), "default")));
             }
         }
         Logger.err("Terrain mesh generation took " + (System.nanoTime() - time));
@@ -285,7 +293,7 @@ public class World {
         int x = (int) Math.floor(worldX / Terrain.getSIZE());
         int z = (int) Math.floor(worldZ / Terrain.getSIZE());
         try {
-            return terrains.get(new Vector2f(x,z)).getTerrain().getHeightOfTerrain(worldX, worldZ);
+            return terrains.get(new Vector2f(x, z)).getTerrain().getHeightOfTerrain(worldX, worldZ);
         } catch (Exception e) {
             // Logger.err("World doesn't exist in this coordinates xIndex : " + x + " ZIndex : " + z);
         }

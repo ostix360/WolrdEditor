@@ -17,7 +17,7 @@ public class Camera implements ICamera {
     private static final float RUN_SPEED = 260;
     private static final float TURN_SPEED = 780;
 
-    public final int viewDistance = 15;
+    public final int viewDistance = 9;
 
     private float currentSpeed = 0;
     private float currentTurnSpeed = 0;

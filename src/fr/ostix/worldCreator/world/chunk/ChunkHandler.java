@@ -303,8 +303,8 @@ public class ChunkHandler {
             chunkFileIndexX = chunkFileIndexXPositive;
             chunkFileIndexZ = playerChunkZ / 3;
             Chunk chunk = chunksFileList.get(new Vector2f(chunkFileIndexX, chunkFileIndexZ)).load(playerChunkX + x, playerChunkZ);
-            worldChunk.put(new Vector2f(playerChunkX + x, playerChunkZ), chunk); // Create new chunk
-            entitiesChunk.put(chunk, chunk.getEntities());
+            worldChunk.putIfAbsent(new Vector2f(playerChunkX + x, playerChunkZ), chunk); // Create new chunk
+            entitiesChunk.putIfAbsent(chunk, chunk.getEntities());
             entities.addAll(chunk.getEntities());
             world.getPhysics().add(chunk);
         }

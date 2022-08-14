@@ -66,7 +66,7 @@ public class EntitySettingPanel extends JPanel {
         btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                frame.getWorld().remove(entity, false);
+                frame.getWorld().remove(entity);
             }
         });
         this.add(btn, gc);
