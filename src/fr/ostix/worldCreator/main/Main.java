@@ -106,6 +106,10 @@ public class Main {
         TerrainTexture bt = new TerrainTexture(bTexture.getTexture().getId());
         TerrainTexture blendt = new TerrainTexture(blendRequest.getTexture().getId());
         blendt.setName("blendMap");
+        backt.setName("grassy2");
+        rt.setName("mud");
+        gt.setName("grassFlowers");
+        bt.setName("path");
 
         TerrainTexturePack tp = new TerrainTexturePack(backt,rt,gt,bt);
         Config.BLEND_MAP = blendt;

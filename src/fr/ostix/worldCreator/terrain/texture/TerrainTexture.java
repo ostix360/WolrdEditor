@@ -2,6 +2,8 @@ package fr.ostix.worldCreator.terrain.texture;
 
 import fr.ostix.worldCreator.core.resourcesProcessor.*;
 
+import java.util.*;
+
 public class TerrainTexture {
 
     private int textureID;
@@ -43,6 +45,15 @@ public class TerrainTexture {
             }
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof TerrainTexture)) return false;
+        TerrainTexture that = (TerrainTexture) o;
+        return getName().equals(that.getName());
+    }
+
 
     public String getName() {
         return name;

@@ -32,12 +32,21 @@ public class EntityEditionPanel extends JPanel {
         GridBagConstraints gc = new GridBagConstraints();
         gc.fill = 2;
         gc.gridx = 0;
+        addPlayerModel(gc);
+        gc.gridx = 1;
         gc.gridy = 0;
         addPickModeButton(gc);
         gc.gridy = 1;
         addAddEntityModeButton(gc);
-        gc.gridx = 1;
+        gc.gridx = 2;
         this.add(this.entity,gc);
+    }
+
+    private void addPlayerModel(GridBagConstraints gc) {
+        final JButton btn = new JButton("Ajouter le joueur");
+        btn.setPreferredSize(new Dimension(200,50));
+        btn.addActionListener(e -> frame.getWorld().addPlayer());
+        this.add(btn,gc);
     }
 
     private void addAddEntityModeButton(GridBagConstraints gc) {

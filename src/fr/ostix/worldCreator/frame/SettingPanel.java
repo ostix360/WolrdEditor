@@ -5,6 +5,7 @@ import fr.ostix.worldCreator.frame.editor.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 public class SettingPanel extends JPanel {
 
@@ -33,6 +34,16 @@ public class SettingPanel extends JPanel {
             this.remove(currentPanel);
         }
         this.add(currentPanel = new WaterTileSettingPanel(frame));
+        this.validate();
+        this.repaint();
+    }
+
+    public void initEntitiesPanel(List<Entity> entities) {
+        setBorder(BorderFactory.createTitledBorder("Parametre des entités"));
+        if (currentPanel != null){
+            this.remove(currentPanel);
+        }
+        this.add(currentPanel = new EntitiesSettingPanel(entities,this.getWidth(), this.getHeight(),frame));
         this.validate();
         this.repaint();
     }

@@ -11,6 +11,7 @@ import fr.ostix.worldCreator.entity.*;
 import fr.ostix.worldCreator.entity.camera.*;
 import fr.ostix.worldCreator.frame.*;
 import fr.ostix.worldCreator.graphics.*;
+import fr.ostix.worldCreator.graphics.model.*;
 import fr.ostix.worldCreator.main.*;
 import fr.ostix.worldCreator.terrain.*;
 import fr.ostix.worldCreator.terrain.texture.*;
@@ -30,6 +31,8 @@ import static org.lwjgl.glfw.GLFW.*;
 public class World {
     private static Map<Vector2f, Chunk> terrains = null;
     private final List<WaterTile> waterTiles = new ArrayList<>();
+
+    private final List<Entity> entitiesPicked = new ArrayList<>();
     private static final List<Entity> entities = new CopyOnWriteArrayList<>();
     private static final List<Entity> aabbs = new ArrayList<>();
     private final MousePicker mousePicker;
@@ -42,6 +45,8 @@ public class World {
     private MasterRenderer renderer;
     private boolean canAddEntity;
     private int timer = 0;
+
+    private Entity p;
 
     private final BulletAppState physics = new BulletAppState();
     ;
@@ -176,7 +181,14 @@ public class World {
                     Entity e = (Entity) results.get(0).getCollisionObject().getUserObject(); //TODO collisionSystem.findEntityInRay(cam, mousePicker.getCurrentRay());
                     if (e != null) {
                         if (Input.keysMouse[GLFW_MOUSE_BUTTON_1]) {
-                            frame.notifySelectedEntity(entityPicked = e);
+                            if (Input.keys[KeyEvent.VK_CONTROL]){
+                                entitiesPicked.add(e);
+                                frame.notifySelectedEntities(entitiesPicked);
+                            }else{
+                                entitiesPicked.clear();
+                                frame.notifySelectedEntity(entityPicked = e);
+                                entitiesPicked.add(e);
+                            }
                             e.setPicking(true);
                         }
                         e.setPicking(true);
@@ -186,6 +198,7 @@ public class World {
             }
             if (entityPicked != null) {
                 entityPicked.setPicking(true);
+                entitiesPicked.forEach(entity -> entity.setPicking(true));
             }
         }
         if (ResourcePackLoader.isLoaded()) {
@@ -230,6 +243,11 @@ public class World {
                 TerrainTexture gt = new TerrainTexture(gTexture.getTexture().getId());
                 TerrainTexture bt = new TerrainTexture(bTexture.getTexture().getId());
                 TerrainTexture blendt = new TerrainTexture(blendRequest.getTexture().getId());
+                blendt.setName("blendMap");
+                backt.setName("grassy2");
+                rt.setName("mud");
+                gt.setName("grassFlowers");
+                bt.setName("path");
 
                 TerrainTexturePack tp = new TerrainTexturePack(backt, rt, gt, bt);
                 blendt.setName("blendMap");
@@ -269,6 +287,11 @@ public class World {
             TerrainTexture gt = new TerrainTexture(gTexture.getTexture().getId());
             TerrainTexture bt = new TerrainTexture(bTexture.getTexture().getId());
             TerrainTexture blendt = new TerrainTexture(blendRequest.getTexture().getId());
+            blendt.setName("blendMap");
+            backt.setName("grassy2");
+            rt.setName("mud");
+            gt.setName("grassFlowers");
+            bt.setName("path");
 
             TerrainTexturePack tp = new TerrainTexturePack(backt, rt, gt, bt);
             blendt.setName("blendMap");
@@ -324,5 +347,15 @@ public class World {
 
     public ChunkHandler getChunkManager() {
         return chunkHandler;
+    }
+
+    public void addPlayer() {
+        if (!entities.contains(p)){
+            Model player = ResourcePackLoader.getModelByName().get("player");
+            p = new Entity(player,new Vector3f(0),new Vector3f(0),0.5f,-1);
+            entities.add(p);
+        }
+        p.setPosition(new Vector3f(cam.getPosition().x(),getTerrainHeight(cam.getPosition().x(),cam.getPosition().z()), cam.getPosition().z()));
+
     }
 }

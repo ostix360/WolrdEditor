@@ -236,4 +236,8 @@ public class MainFrame {
     public void notifySelectedEntity(Entity entity) {
         settingPanel.initEntityPanel(entity);
     }
+
+    public void notifySelectedEntities(List<Entity> entities) {
+        settingPanel.initEntitiesPanel(entities);
+    }
 }

@@ -42,10 +42,7 @@ public class Chunk {
     }
 
     public boolean isEmpty() {
-        if (this.entities.isEmpty()) {
-                return true;
-        }
-        return false;
+        return this.entities.isEmpty() && this.terrain.isDefault();
     }
 
     private void exportEntities(FileChannel fc) throws IOException {

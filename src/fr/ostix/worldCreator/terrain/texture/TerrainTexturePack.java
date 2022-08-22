@@ -5,6 +5,7 @@ import fr.ostix.worldCreator.core.resourcesProcessor.*;
 
 import java.io.*;
 import java.nio.channels.*;
+import java.util.*;
 
 public class TerrainTexturePack {
     private final TerrainTexture backgroundTexture;
@@ -18,10 +19,7 @@ public class TerrainTexturePack {
         this.rTexture = rTexture;
         this.gTexture = gTexture;
         this.bTexture = bTexture;
-        this.backgroundTexture.setName("grassy2");
-        this.rTexture.setName("mud");
-        this.gTexture.setName("grassFlowers");
-        this.bTexture.setName("path");
+
 
     }
 
@@ -56,6 +54,15 @@ public class TerrainTexturePack {
     public TerrainTexture getbTexture() {
         return bTexture;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof TerrainTexturePack)) return false;
+        TerrainTexturePack that = (TerrainTexturePack) o;
+        return getBackgroundTexture().equals(that.getBackgroundTexture()) && getrTexture().equals(that.getrTexture()) && getgTexture().equals(that.getgTexture()) && getbTexture().equals(that.getbTexture());
+    }
+
 
     public void export(FileChannel fc) throws IOException {
         String back = getBackgroundTexture().getName().replaceAll(".png","");

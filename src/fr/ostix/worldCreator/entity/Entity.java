@@ -49,7 +49,7 @@ public class Entity {
         this.rotation = new Vector3f(0);
         this.scale = new Vector3f(1);
         this.transform = new Transform(position, rotation, 1);
-        this.movement = MovementType.FORWARD;
+        this.movement = MovementType.STATIC;
     }
 
     public Entity(Entity entity) {

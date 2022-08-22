@@ -1,9 +1,12 @@
 package fr.ostix.worldCreator.world.chunk;
 
+import fr.ostix.worldCreator.frame.*;
 import fr.ostix.worldCreator.terrain.*;
 import fr.ostix.worldCreator.terrain.texture.*;
 import fr.ostix.worldCreator.toolBox.*;
 
+import javax.imageio.*;
+import java.awt.image.*;
 import java.io.*;
 import java.nio.*;
 import java.nio.channels.*;
@@ -12,8 +15,15 @@ import java.util.concurrent.*;
 
 public class ChunksFile {
     private final List<Chunk> chunks;
-    private int x,z;
+    private final int x;
+    private final int z;
     private String content;
+
+    private String heightMap;
+
+    private float[][] heights;
+
+    private static final int MAX_HEIGHT = 40;
 
     public ChunksFile(int x, int z) {
         this.x = x;
@@ -60,6 +70,10 @@ public class ChunksFile {
             e.printStackTrace();
         }
         this.content = content;
+        String[] chunksContent = this.content.split("\n");
+        if (chunksContent.length > 0) {
+            loadHeightMap(chunksContent[0]);
+        }
     }
 
     public Chunk load(int x,int z){
@@ -78,12 +92,69 @@ public class ChunksFile {
                     i++;
                     if(i>=chunksContent.length)break;
                 }
-                return this.addPart(Chunk.load(sb.toString(),x,z));
+                float[][] heights = chooseHeight(x,z); //TODO
+                return this.addPart(Chunk.load(sb.toString(),x,z,heights));
             }
         }
         //System.err.println("Chunk not found in file " + content);
         return this.addPart(new Chunk(x,z,new ArrayList<>()).
                 setTerrain(new Terrain(x,z,new TerrainTexturePack(Config.TERRAIN_DEFAULT_PACK),new TerrainTexture(Config.BLEND_MAP),"default")));
+    }
+
+    private float[][] chooseHeight(int x, int z) {
+        float[][] heights = new float[16][16];
+        int xIndex;
+        int zIndex;
+        if (this.x >= 0){
+            xIndex = x/(this.x+1);
+        }else{
+            xIndex = x/(this.x);
+        }
+        if (this.z >= 0) {
+            zIndex = z/(this.z+1);
+        }else {
+            zIndex = z/(this.z);
+        }
+
+        for (int z1 = 0; z1 < 16; z1++) {            // Boucle de generation de la hauteur
+            for (int x1 = 0; x1 < 16; x1++) {
+                heights[x][z] = this.heights[xIndex+x1][zIndex+1];
+            }
+        }
+
+        return heights;
+    }
+
+    public void loadHeightMap(String map){
+        BufferedImage image = null;
+        try {
+            image = ImageIO.read(new File(Config.REPOSITORY_FOLDER + "/textures/terrain/heightMap/" + heightMap + ".png"));
+        } catch (IOException e) {
+            Logger.err("Couldn't load heightMap ", e);
+            new ErrorPopUp("Impossible de lire la heightMap " + Config.REPOSITORY_FOLDER + "/textures/terrain/heightMap/" + heightMap + ".png");
+        }
+        assert image != null;
+        if (image.getHeight() != 1024 || image.getWidth() != 1024) {
+            new ErrorPopUp("Votre heightMap doit être de 1024 x 1024");
+        }
+        for (int z = 0; z < 1024; z++) {            // Boucle de generation de monde
+            for (int x = 0; x < 1024; x++) {
+                heights[x][z] = getHeight(x, z, image);
+            }
+        }
+        this.heightMap = map;
+
+    }
+
+    private float getHeight(int x, int z, BufferedImage image) {
+        if (x < 0 || x >= image.getHeight() || z < 0 || z >= image.getHeight()) {
+            return 0;
+        }
+        float height = image.getRGB(x, z);
+        height += 256 * 256 * 256f / 2f;
+        height /= 256 * 256 * 256f / 2f;
+        height *= MAX_HEIGHT;
+        return height;
     }
 
     public Chunk addPart(Chunk chunk) {
