@@ -52,7 +52,7 @@ public class ErrorPopUp {
         this.frame.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
         this.frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.frame.setSize(400, 200);
-        this.frame.setResizable(false);
+        this.frame.setResizable(true);
         this.frame.setLocationRelativeTo(null);
         this.frame.setLayout(new GridBagLayout());
     }

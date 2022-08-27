@@ -57,6 +57,7 @@ public class TerrainSettingPanel extends JPanel {
                 if (ter != null) {
                     File tex = new TextureChooserScreen("heightMap").getChosen();
                     if(tex!= null) {
+                        ter.setHeightMap(tex.getName().replaceAll(".png", ""));
                         ter.regenerateTerrain(tex.getName().replaceAll(".png", ""));
                     }
                 }

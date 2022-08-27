@@ -3,16 +3,12 @@ package fr.ostix.worldCreator.terrain;
 
 import com.jme3.bullet.control.*;
 import fr.ostix.worldCreator.core.resourcesProcessor.*;
-import fr.ostix.worldCreator.frame.*;
 import fr.ostix.worldCreator.graphics.model.*;
 import fr.ostix.worldCreator.terrain.texture.*;
 import fr.ostix.worldCreator.toolBox.*;
 import fr.ostix.worldCreator.world.chunk.*;
 import org.joml.*;
 
-import javax.imageio.*;
-import java.awt.image.*;
-import java.io.*;
 import java.lang.Math;
 import java.util.*;
 
@@ -34,13 +30,16 @@ public class Terrain {
 
     private TerrainControl control = null;
 
-    private BufferedImage image;
+    private final ChunksFile parent;
 
 
-    public Terrain(float gridX, float gridZ, TerrainTexturePack texturePack, TerrainTexture blendMap, String heightMap) {
+
+
+    public Terrain(float gridX, float gridZ, TerrainTexturePack texturePack, TerrainTexture blendMap, float[][] heights, ChunksFile parent) {
         this.x = gridX * SIZE;
         this.z = gridZ * SIZE;
-        this.heightMap = heightMap;
+        this.heights = heights;
+        this.parent = parent;
         generateTerrain();
         this.texturePack = texturePack;
         this.blendMap = blendMap;
@@ -81,148 +80,7 @@ public class Terrain {
         }
         return answer;
     }
-    private void smoothTerrain(Map<Vector2f, Chunk> worldChunk) {
-//        int edgeL = (int) Math.sqrt(left.heights.length);
-//        int edgeR = (int) Math.sqrt(right.heights.length);
-//        int edgeU = (int) Math.sqrt(up.heights.length);
-//        int edgeD = (int) Math.sqrt(bottom.heights.length);
-
-        Chunk leftC = worldChunk.get(new Vector2f(x / SIZE - 1, z / SIZE));
-        Chunk rightC = worldChunk.get(new Vector2f(x / SIZE + 1, z / SIZE));
-        Chunk upC = worldChunk.get(new Vector2f(x / SIZE, z / SIZE + 1));
-        Chunk downC = worldChunk.get(new Vector2f(x / SIZE, z / SIZE - 1));
-
-        Chunk leftUC = worldChunk.get(new Vector2f(x / SIZE - 1, z / SIZE + 1));
-        Chunk rightUC = worldChunk.get(new Vector2f(x / SIZE + 1, z / SIZE +1));
-        Chunk leftDC = worldChunk.get(new Vector2f(x / SIZE - 1, z / SIZE - 1));
-        Chunk rightDC = worldChunk.get(new Vector2f(x / SIZE + 1, z / SIZE - 1));
-
-
-
-        boolean leftIsModified = false;
-        boolean rightIsModified = false;
-        boolean upIsModified = false;
-        boolean downIsModified = false;
-
-        boolean leftUIsModified = false;
-        boolean rightUIsModified = false;
-        boolean leftDIsModified = false;
-        boolean rightDIsModified = false;
-
-
-
-        Terrain t;
-        for (int z = 0; z < 16; z++) {
-            if (leftC == null && rightC == null) {
-                break;
-            }
-            if (leftC != null) {
-                t = leftC.getTerrain();
-                if (t.heights[15][z] != this.heights[0][z]) {
-                    t.heights[15][z] = this.heights[0][z]  = (t.heights[15][z]  + this.heights[0][z] ) / 2;
-                    leftIsModified = true;
-                }
-
-            }
-            if (rightC != null) {
-                t = rightC.getTerrain();
-                if (t.heights[0][z] != this.heights[15][z]) {
-                    t.heights[0][z] = this.heights[15][z]  = (t.heights[0][z]  + this.heights[15][z] ) / 2;
-                    rightIsModified = true;
-                }
-
-            }
-        }
-        for (int x = 0; x < 16; x++) {
-            if (upC == null && downC == null) {
-                break;
-            }
-            if (upC != null) {
-                t = upC.getTerrain();
-                if (t.heights[x][0] != this.heights[x][15]) {
-                    this.heights[x][15] = (t.heights[x][0] + this.heights[x][15]) / 2;
-                    t.heights[x][0] = this.heights[x][15];
-                    upIsModified = true;
-                }
-
-            }
-            if (downC != null) {
-                t = downC.getTerrain();
-                if (t.heights[x][15] != this.heights[x][0]) {
-                    this.heights[x][0] = (t.heights[x][15] + this.heights[x][0]) / 2;
-                    t.heights[x][15] = this.heights[x][0];
-                    downIsModified = true;
-                }
-            }
-        }
-
-        if (leftUC != null) {
-            t = leftUC.getTerrain();
-            if (t.heights[15][0] != this.heights[0][15]) {
-                this.heights[0][15] = (t.heights[15][0] + this.heights[0][15]) / 2;
-                t.heights[15][0] = this.heights[0][15];
-                leftUIsModified = true;
-            }
-        }
-        if (rightUC != null) {
-            t = rightUC.getTerrain();
-            if (t.heights[0][0] !=  this.heights[15][15]) {
-                this.heights[15][15] = (t.heights[0][0] + this.heights[15][15]) / 2;
-                t.heights[0][0] = this.heights[15][15];
-                rightUIsModified = true;
-            }
-        }
-        if (leftDC != null) {
-            t = leftDC.getTerrain();
-            if (t.heights[15][15] !=  this.heights[0][0]) {
-                this.heights[0][0] = (t.heights[15][15] + this.heights[0][0]) / 2;
-                t.heights[15][15] = this.heights[0][0];
-                leftDIsModified = true;
-            }
-        }
-        if (rightDC != null) {
-            t = rightDC.getTerrain();
-            if (t.heights[0][15] != this.heights[15][0]) {
-                this.heights[15][0] = (t.heights[0][15] + this.heights[15][0]) / 2;
-                t.heights[0][15] = this.heights[15][0];
-                rightDIsModified = true;
-            }
-        }
-
-        if (leftIsModified) {
-            smoothTerrain(worldChunk);
-            leftC.getTerrain().regenerateTerrain();
-        }
-        if (rightIsModified) {
-            smoothTerrain(worldChunk);
-            rightC.getTerrain().regenerateTerrain();
-        }
-        if (upIsModified) {
-            smoothTerrain(worldChunk);
-            upC.getTerrain().regenerateTerrain();
-        }
-        if (downIsModified) {
-            smoothTerrain(worldChunk);
-            downC.getTerrain().regenerateTerrain();
-        }
-        if (leftUIsModified) {
-            smoothTerrain(worldChunk);
-            leftUC.getTerrain().regenerateTerrain();
-        }
-        if (rightUIsModified) {
-            smoothTerrain(worldChunk);
-            rightUC.getTerrain().regenerateTerrain();
-        }
-        if (leftDIsModified) {
-            smoothTerrain(worldChunk);
-            leftDC.getTerrain().regenerateTerrain();
-        }
-        if (rightDIsModified) {
-            smoothTerrain(worldChunk);
-            rightDC.getTerrain().regenerateTerrain();
-        }
-
-    }
+//
 
     @Override
     public boolean equals(Object o) {
@@ -238,9 +96,10 @@ public class Terrain {
         generateTerrain();
     }
 
-    private void regenerateTerrain() {
+    public void regenerateTerrain(float[][] heights) {
         this.model = null;
-        int VERTEX_COUNT = heights.length;
+        this.heights = heights;
+        int VERTEX_COUNT = 16;
         int count = VERTEX_COUNT * VERTEX_COUNT;
         float[] vertices = new float[count * 3];
         float[] normals = new float[count * 3];
@@ -248,7 +107,7 @@ public class Terrain {
         for (int z = 0; z < VERTEX_COUNT; z++) {            // Boucle de generation de monde
             for (int x = 0; x < VERTEX_COUNT; x++) {
                 vertices[vertexPointer * 3] = (float) x / ((float) VERTEX_COUNT - 1) * SIZE;
-                vertices[vertexPointer * 3 + 1] = heights[x][z];
+                vertices[vertexPointer * 3 + 1] = getHeight(x,z);
                 vertices[vertexPointer * 3 + 2] = (float) z / ((float) VERTEX_COUNT - 1) * SIZE;
                 Vector3f normal = calculateNormal(x, z);
                 normals[vertexPointer * 3] = normal.x;
@@ -265,38 +124,27 @@ public class Terrain {
     private void generateTerrain() {
         this.model = null;
         //long time = System.nanoTime();
-        try {
-            image = ImageIO.read(new File(Config.REPOSITORY_FOLDER + "/textures/terrain/heightMap/" + heightMap + ".png"));
-        } catch (IOException e) {
-            Logger.err("Couldn't load heightMap ", e);
-            new ErrorPopUp("Impossible de lire la heightMap " + Config.REPOSITORY_FOLDER + "/textures/terrain/heightMap/" + heightMap + ".png");
-        }
+
         // Logger.log("Height Map reading took " + (System.nanoTime() - time));
 
-        assert image != null;
-        int VERTEX_COUNT = image.getHeight();
-        heights = new float[VERTEX_COUNT][VERTEX_COUNT];
+        int VERTEX_COUNT = 16;
         int count = VERTEX_COUNT * VERTEX_COUNT;
         float[] vertices = new float[count * 3];
         float[] normals = new float[count * 3];
         float[] textureCoords = new float[count * 2];
         int[] indices = new int[6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1)];
         int vertexPointer = 0;
-        for (int z = 0; z < VERTEX_COUNT; z++) {            // Boucle de generation de monde
-            for (int x = 0; x < VERTEX_COUNT; x++) {
-                heights[x][z] = getHeight(x, z, image);
-            }
-        }
-        if (worldChunk.size() > 0) {
-            smoothTerrain(worldChunk);
-        }
+
+//        if (worldChunk.size() > 0) {
+//            smoothTerrain(worldChunk);
+//        }
 
         for (int z = 0; z < VERTEX_COUNT; z++) {            // Boucle de generation de monde
             for (int x = 0; x < VERTEX_COUNT; x++) {
 //                float height = getHeight(x, z, image);
 //                heights[x][z] = height;
                 vertices[vertexPointer * 3] = (float) x / ((float) VERTEX_COUNT - 1) * SIZE;
-                vertices[vertexPointer * 3 + 1] = heights[x][z];
+                vertices[vertexPointer * 3 + 1] = getHeight(x,z);
                 vertices[vertexPointer * 3 + 2] = (float) z / ((float) VERTEX_COUNT - 1) * SIZE;
                 Vector3f normal = calculateNormal(x, z);
                 normals[vertexPointer * 3] = normal.x;
@@ -343,21 +191,21 @@ public class Terrain {
     }
 
     private float getHeight(int x, int z) {
-        if (x < 0 || x >= 16 || z < 0 || z >= 16) {
+        if (x < -1 || x >= 17 || z < -1 || z >= 17) {
             return 0;
         }
-        return heights[x][z];
+        return heights[x+1][z+1];
     }
-    private float getHeight(int x, int z, BufferedImage image) {
-        if (x < 0 || x >= image.getHeight() || z < 0 || z >= image.getHeight()) {
-            return 0;
-        }
-        float height = image.getRGB(x, z);
-        height += MAX_PIXEL_COLOR / 2;
-        height /= MAX_PIXEL_COLOR / 2;
-        height *= MAX_HEIGHT;
-        return height;
-    }
+//    private float getHeight(int x, int z, BufferedImage image) {
+//        if (x < 0 || x >= image.getHeight() || z < 0 || z >= image.getHeight()) {
+//            return 0;
+//        }
+//        float height = image.getRGB(x, z);
+//        height += MAX_PIXEL_COLOR / 2;
+//        height /= MAX_PIXEL_COLOR / 2;
+//        height *= MAX_HEIGHT;
+//        return height;
+//    }
 
 
     public static int getSIZE() {
@@ -407,6 +255,153 @@ public class Terrain {
     }
 
     public boolean isDefault() {
-        return this.blendMap.getName().equals("blendMap") && this.texturePack.equals(Config.TERRAIN_DEFAULT_PACK) && this.heightMap.equals("default");
+        return this.blendMap.getName().equals("blendMap") && this.texturePack.equals(Config.TERRAIN_DEFAULT_PACK);
     }
+
+    public void setHeightMap(String heightMap) {
+        parent.setHeightMap(heightMap);
+    }
+
+//    private void smoothTerrain(Map<Vector2f, Chunk> worldChunk) {
+////        int edgeL = (int) Math.sqrt(left.heights.length);
+////        int edgeR = (int) Math.sqrt(right.heights.length);
+////        int edgeU = (int) Math.sqrt(up.heights.length);
+////        int edgeD = (int) Math.sqrt(bottom.heights.length);
+//
+//        Chunk leftC = worldChunk.get(new Vector2f(x / SIZE - 1, z / SIZE));
+//        Chunk rightC = worldChunk.get(new Vector2f(x / SIZE + 1, z / SIZE));
+//        Chunk upC = worldChunk.get(new Vector2f(x / SIZE, z / SIZE + 1));
+//        Chunk downC = worldChunk.get(new Vector2f(x / SIZE, z / SIZE - 1));
+//
+//        Chunk leftUC = worldChunk.get(new Vector2f(x / SIZE - 1, z / SIZE + 1));
+//        Chunk rightUC = worldChunk.get(new Vector2f(x / SIZE + 1, z / SIZE +1));
+//        Chunk leftDC = worldChunk.get(new Vector2f(x / SIZE - 1, z / SIZE - 1));
+//        Chunk rightDC = worldChunk.get(new Vector2f(x / SIZE + 1, z / SIZE - 1));
+//
+//
+//
+//        boolean leftIsModified = false;
+//        boolean rightIsModified = false;
+//        boolean upIsModified = false;
+//        boolean downIsModified = false;
+//
+//        boolean leftUIsModified = false;
+//        boolean rightUIsModified = false;
+//        boolean leftDIsModified = false;
+//        boolean rightDIsModified = false;
+//
+//
+//
+//        Terrain t;
+//        for (int z = 0; z < 16; z++) {
+//            if (leftC == null && rightC == null) {
+//                break;
+//            }
+//            if (leftC != null) {
+//                t = leftC.getTerrain();
+//                if (t.heights[15][z] != this.heights[0][z]) {
+//                    t.heights[15][z] = this.heights[0][z]  = (t.heights[15][z]  + this.heights[0][z] ) / 2;
+//                    leftIsModified = true;
+//                }
+//
+//            }
+//            if (rightC != null) {
+//                t = rightC.getTerrain();
+//                if (t.heights[0][z] != this.heights[15][z]) {
+//                    t.heights[0][z] = this.heights[15][z]  = (t.heights[0][z]  + this.heights[15][z] ) / 2;
+//                    rightIsModified = true;
+//                }
+//
+//            }
+//        }
+//        for (int x = 0; x < 16; x++) {
+//            if (upC == null && downC == null) {
+//                break;
+//            }
+//            if (upC != null) {
+//                t = upC.getTerrain();
+//                if (t.heights[x][0] != this.heights[x][15]) {
+//                    this.heights[x][15] = (t.heights[x][0] + this.heights[x][15]) / 2;
+//                    t.heights[x][0] = this.heights[x][15];
+//                    upIsModified = true;
+//                }
+//
+//            }
+//            if (downC != null) {
+//                t = downC.getTerrain();
+//                if (t.heights[x][15] != this.heights[x][0]) {
+//                    this.heights[x][0] = (t.heights[x][15] + this.heights[x][0]) / 2;
+//                    t.heights[x][15] = this.heights[x][0];
+//                    downIsModified = true;
+//                }
+//            }
+//        }
+//
+//        if (leftUC != null) {
+//            t = leftUC.getTerrain();
+//            if (t.heights[15][0] != this.heights[0][15]) {
+//                this.heights[0][15] = (t.heights[15][0] + this.heights[0][15]) / 2;
+//                t.heights[15][0] = this.heights[0][15];
+//                leftUIsModified = true;
+//            }
+//        }
+//        if (rightUC != null) {
+//            t = rightUC.getTerrain();
+//            if (t.heights[0][0] !=  this.heights[15][15]) {
+//                this.heights[15][15] = (t.heights[0][0] + this.heights[15][15]) / 2;
+//                t.heights[0][0] = this.heights[15][15];
+//                rightUIsModified = true;
+//            }
+//        }
+//        if (leftDC != null) {
+//            t = leftDC.getTerrain();
+//            if (t.heights[15][15] !=  this.heights[0][0]) {
+//                this.heights[0][0] = (t.heights[15][15] + this.heights[0][0]) / 2;
+//                t.heights[15][15] = this.heights[0][0];
+//                leftDIsModified = true;
+//            }
+//        }
+//        if (rightDC != null) {
+//            t = rightDC.getTerrain();
+//            if (t.heights[0][15] != this.heights[15][0]) {
+//                this.heights[15][0] = (t.heights[0][15] + this.heights[15][0]) / 2;
+//                t.heights[0][15] = this.heights[15][0];
+//                rightDIsModified = true;
+//            }
+//        }
+//
+//        if (leftIsModified) {
+//            smoothTerrain(worldChunk);
+//            leftC.getTerrain().regenerateTerrain();
+//        }
+//        if (rightIsModified) {
+//            smoothTerrain(worldChunk);
+//            rightC.getTerrain().regenerateTerrain();
+//        }
+//        if (upIsModified) {
+//            smoothTerrain(worldChunk);
+//            upC.getTerrain().regenerateTerrain();
+//        }
+//        if (downIsModified) {
+//            smoothTerrain(worldChunk);
+//            downC.getTerrain().regenerateTerrain();
+//        }
+//        if (leftUIsModified) {
+//            smoothTerrain(worldChunk);
+//            leftUC.getTerrain().regenerateTerrain();
+//        }
+//        if (rightUIsModified) {
+//            smoothTerrain(worldChunk);
+//            rightUC.getTerrain().regenerateTerrain();
+//        }
+//        if (leftDIsModified) {
+//            smoothTerrain(worldChunk);
+//            leftDC.getTerrain().regenerateTerrain();
+//        }
+//        if (rightDIsModified) {
+//            smoothTerrain(worldChunk);
+//            rightDC.getTerrain().regenerateTerrain();
+//        }
+//
+//    }
 }

@@ -301,7 +301,7 @@ public class World {
         long time = System.nanoTime();
         for (int x1 = xCoords; x1 < xCoords + x; x1++) {
             for (int z1 = zCoords; z1 < zCoords + z; z1++) {
-                terrains.put(new Vector2f(x1, z1), new Chunk(x1, z1, new ArrayList<>()).setTerrain(new Terrain(x1, z1, new TerrainTexturePack(Config.TERRAIN_DEFAULT_PACK), new TerrainTexture(Config.BLEND_MAP), "default")));
+                terrains.put(new Vector2f(x1, z1), new Chunk(x1, z1, new ArrayList<>()).setTerrain(new Terrain(x1, z1, new TerrainTexturePack(Config.TERRAIN_DEFAULT_PACK), new TerrainTexture(Config.BLEND_MAP), new float[16][16], null)));
             }
         }
         Logger.err("Terrain mesh generation took " + (System.nanoTime() - time));
