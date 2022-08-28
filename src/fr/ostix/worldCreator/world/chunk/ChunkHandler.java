@@ -17,7 +17,7 @@ public class ChunkHandler {
 
     private final Map<Vector2f, Chunk> chunkList = new ConcurrentHashMap<>();
 
-    private static final float CHUNK_FILE_SIZE = 32f;
+    private static final float CHUNK_FILE_SIZE = 34f;
     private final Map<Vector2f, ChunksFile> chunksFileList = new ConcurrentHashMap<>();
     private final Camera cam;
     private final Map<Vector2f, Chunk> worldChunk;

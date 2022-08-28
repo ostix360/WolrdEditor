@@ -255,7 +255,7 @@ public class Terrain {
     }
 
     public boolean isDefault() {
-        return this.blendMap.getName().equals("blendMap") && this.texturePack.equals(Config.TERRAIN_DEFAULT_PACK);
+        return this.blendMap.getName().equals("fullBlack") && this.texturePack.equals(Config.TERRAIN_DEFAULT_PACK);
     }
 
     public void setHeightMap(String heightMap) {

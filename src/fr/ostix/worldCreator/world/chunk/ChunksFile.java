@@ -20,9 +20,9 @@ public class ChunksFile {
     private final int z;
     private String content;
 
-    private String heightMap = "default1024";
+    private String heightMap = "default512";
 
-    private final float[][] heights  = new float[512][512];
+    private final float[][] heights  = new float[513][513];
 
     private static final int MAX_HEIGHT = 100;
 
@@ -76,7 +76,7 @@ public class ChunksFile {
         if (chunksContent.length > 0) {
             loadHeightMap(chunksContent[0]);
         }else{
-            loadHeightMap("default1024");
+            loadHeightMap("default512");
         }
     }
 
@@ -96,7 +96,7 @@ public class ChunksFile {
                     i++;
                     if(i>=chunksContent.length)break;
                 }
-                float[][] heights = chooseHeight(x,z); //TODO
+                float[][] heights = chooseHeight(x,z);
                 return this.addPart(Chunk.load(sb.toString(),x,z,heights,this));
             }
         }
@@ -145,6 +145,7 @@ public class ChunksFile {
                 }
             }
         }
+        System.out.println("xIndex: " + xIndex + " zIndex: " + zIndex);
 //        for (int z1 = 0; z1 < 18; z1++) {            //Boucle de generation de la hauteur
 //            for (int x1 = 0; x1 < 18; x1++) {
 //                heights[x1][z1] = this.heights[xIndex+x1][zIndex+z1];

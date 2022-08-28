@@ -91,7 +91,7 @@ public class Main {
         TextureLoaderRequest rTexture = new TextureLoaderRequest(Main.class.getResourceAsStream("/res/terrain/mud.png"));
         TextureLoaderRequest gTexture = new TextureLoaderRequest(Main.class.getResourceAsStream("/res/terrain/grassFlowers.png"));
         TextureLoaderRequest bTexture = new TextureLoaderRequest(Main.class.getResourceAsStream("/res/terrain/path.png"));
-        TextureLoaderRequest blendRequest = new TextureLoaderRequest(Main.class.getResourceAsStream("/res/terrain/blendMap.png"));
+        TextureLoaderRequest blendRequest = new TextureLoaderRequest(Main.class.getResourceAsStream("/res/terrain/fullBlack.png"));
         GLRequestProcessor.sendRequest(backgroundTexture,rTexture,gTexture,bTexture,blendRequest);
 
         Timer.waitForRequest(blendRequest);
@@ -105,7 +105,7 @@ public class Main {
         TerrainTexture gt = new TerrainTexture(gTexture.getTexture().getId());
         TerrainTexture bt = new TerrainTexture(bTexture.getTexture().getId());
         TerrainTexture blendt = new TerrainTexture(blendRequest.getTexture().getId());
-        blendt.setName("blendMap");
+        blendt.setName("fullBlack");
         backt.setName("grassy2");
         rt.setName("mud");
         gt.setName("grassFlowers");
