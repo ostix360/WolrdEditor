@@ -239,6 +239,7 @@ public class Terrain {
     public void setModel() {
         if (modelRequest.isExecuted()) {
             this.model = modelRequest.getModel();
+
         }
     }
 
