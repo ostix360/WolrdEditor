@@ -11,7 +11,7 @@ import fr.ostix.worldCreator.entity.component.particle.*;
 public enum ComponentType {
     COLLISION_COMPONENT("Collision Component", new CollisionCreator(), 0),
     PARTICLE_COMPONENT("Particle Component", new ParticleCreator(), 7),
-    AI_COMPONENT("AI Component", new AICreator(), 1),
+    AI_COMPONENT("AI Component", new AICreator(), 16),
     ANIMATED_COMPONENT("Animated Component", new AnimationCreator(), 0),
     LIGHT_COMPONENT("Light Component", new LightCreator(), 4);
     private final String name;

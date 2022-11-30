@@ -1,5 +1,7 @@
 package fr.ostix.worldCreator.entity.component.ai;
 
+import org.joml.*;
+
 public class AIProperties {
     private final float updatePerSecond;
     private final float speed;
@@ -9,7 +11,10 @@ public class AIProperties {
     private final float rotateProbabilities;
     private final float staticTime;
 
-    public AIProperties(float updatePerSecond, float speed, float speedError, float speedTurn, float speedTurnError, float rotateProbabilities, float staticTime) {
+    private final Vector3f pos;
+    private final float distance;
+
+    public AIProperties(float updatePerSecond, float speed, float speedError, float speedTurn, float speedTurnError, float rotateProbabilities, float staticTime, Vector3f pos, float distance) {
         this.updatePerSecond = updatePerSecond * 60;
         this.speed = speed;
         this.speedError = speedError;
@@ -17,6 +22,8 @@ public class AIProperties {
         this.speedTurnError = speedTurnError;
         this.rotateProbabilities = rotateProbabilities;
         this.staticTime = staticTime;
+        this.pos = pos;
+        this.distance = distance;
     }
 
     public float getRotateProbabilities() {

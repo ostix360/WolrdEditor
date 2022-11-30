@@ -196,7 +196,7 @@ public class MainFrame {
                     Logger.log("Cannot add  a player in the world");
                     return;
                 }
-                Entity e = new Entity(m, contents[0], contents[2],id);
+                Entity e = new Entity(m, contents[0], contents[2],id,contents[3]);
                 LoadComponents.loadComponents(ResourcePackLoader.getComponentsByID().get(Integer.valueOf(contents[2])), e);
                 if (e.getModel() == null) {
                     Logger.err("The model of  " + e + " is null");

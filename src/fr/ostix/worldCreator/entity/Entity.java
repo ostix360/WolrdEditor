@@ -30,6 +30,8 @@ public class Entity {
     private final int id;
     protected PhysicsControl physic;
 
+    private String type = "Entity";
+
 
     public Entity(Model model, Vector3f position, Vector3f rotation, float scale, int id) {
         this.model = model;
@@ -40,11 +42,12 @@ public class Entity {
         this.transform = new Transform(position, rotation, scale);
     }
 
-    public Entity(Model m, String name, String componentID, int id) {
+    public Entity(Model m, String name, String componentID, int id,String type) {
         this.model = m;
         this.name = name;
         this.componentID = componentID;
         this.id = id;
+        this.type = type;
         this.position = new Vector3f(0);
         this.rotation = new Vector3f(0);
         this.scale = new Vector3f(1);
@@ -60,6 +63,7 @@ public class Entity {
         this.scale = new Vector3f(entity.scale);
         this.transform = entity.transform;
         this.components = entity.components;
+        this.type = entity.type;
         this.textureIndex = entity.textureIndex;
         this.componentID = entity.componentID;
         this.collision = new CollisionComponent(this,entity.getCollision().getProp());
@@ -188,6 +192,10 @@ public class Entity {
 
     public void setPicking(boolean v) {
         this.picking = v;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public boolean isPicking() {

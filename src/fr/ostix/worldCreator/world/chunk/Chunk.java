@@ -20,7 +20,7 @@ public class Chunk {
     private final int x;
     private final int z;
 
-    public Chunk(int x, int z,List<Entity> entities) {
+    public Chunk(int x, int z, List<Entity> entities) {
         this.entities = entities;
         this.x = x;
         this.z = z;
@@ -48,7 +48,7 @@ public class Chunk {
     private void exportEntities(FileChannel fc) throws IOException {
         fc.write(DataTransformer.lineBuffer("ENTITIES"));
         for (Entity e : this.entities) {
-            String entityContent = e.toString() +";"+ e.getId() +";"+e.getComponent();
+            String entityContent = e.toString() + ";" + e.getId() + ";" + e.getComponent() + ";" + e.getType();
             fc.write(DataTransformer.lineBuffer(entityContent));
             e.getTransform().export(fc);
         }
@@ -64,8 +64,7 @@ public class Chunk {
         float z = terrain.getZ() / Terrain.getSIZE();
         fc.write(DataTransformer.lineBuffer(x + ";" + z));
         terrain.getTexturePack().export(fc);
-        String blendMap = terrain.getBlendMap().getName().replaceAll(".png","");
-        String heightMap = terrain.getHeightMap();
+        String blendMap = terrain.getBlendMap().getName().replaceAll(".png", "");
         fc.write(DataTransformer.lineBuffer(blendMap));
     }
 
@@ -77,10 +76,10 @@ public class Chunk {
         return terrain;
     }
 
-    public static Chunk load(String content, int x, int z, float[][] heights,ChunksFile parent) {
-        Terrain t = importTerrain(content,heights,parent);
+    public static Chunk load(String content, int x, int z, float[][] heights, ChunksFile parent) {
+        Terrain t = importTerrain(content, heights, parent);
         List<Entity> entities = importEntities(content);
-        return new Chunk(x,z,entities).setTerrain(t);
+        return new Chunk(x, z, entities).setTerrain(t);
     }
 
     private static List<Entity> importEntities(String content) {
@@ -97,7 +96,7 @@ public class Chunk {
             int id = Integer.parseInt(values[1]);
             int component = Integer.parseInt(values[2]);
             Model m = ResourcePackLoader.getModelByName().get(entityName);
-            Entity e = new Entity(m, entityName, String.valueOf(component), id);
+            Entity e = new Entity(m, entityName, String.valueOf(component), id,values[3]);
             LoadComponents.loadComponents(ResourcePackLoader.getComponentsByID().get(component), e);
             if (e.getModel() == null) {
                 Logger.err("The model of  " + e + " is null");
@@ -108,7 +107,7 @@ public class Chunk {
         return entities;
     }
 
-    private static Terrain importTerrain(String content,float[][] heights,ChunksFile parent) {
+    private static Terrain importTerrain(String content, float[][] heights, ChunksFile parent) {
         String[] lines = content.split("\n");
         int index = 0;
 
@@ -118,7 +117,7 @@ public class Chunk {
         float z = Float.parseFloat(values[1]) * Terrain.getSIZE();
         TerrainTexturePack ttp = TerrainTexturePack.load(lines[index++]);
         values = lines[index].split(";");
-        TerrainTexture blendMap = TerrainTexture.load(values[0],true);
+        TerrainTexture blendMap = TerrainTexture.load(values[0], true);
         return new Terrain(x / Terrain.getSIZE(), z / Terrain.getSIZE(), ttp, blendMap, heights, parent);
 
     }
