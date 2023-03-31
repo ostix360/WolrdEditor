@@ -2,6 +2,7 @@ package fr.ostix.worldCreator.toolBox;
 
 import org.lwjgl.BufferUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -11,14 +12,28 @@ import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import static org.lwjgl.BufferUtils.createByteBuffer;
 
 public class FileUtils {
 
+    public static void listFile(File directory, List<File> files) {
+
+        // Get all files from a directory.
+        File[] fList = directory.listFiles();
+        if (fList != null)
+            for (File file : fList) {
+                if (file.isFile()) {
+                    files.add(file);
+                } else if (file.isDirectory()) {
+                    listFile(file, files);
+                }
+            }
+    }
 
 
-    public static ByteBuffer loadByteBufferFromResources(String resource,int bufferSize) {
+    public static ByteBuffer loadByteBufferFromResources(String resource, int bufferSize) {
         ByteBuffer buffer = null;
 
         Path path = Paths.get("/sounds/" + resource + FileType.OGG);
@@ -48,7 +63,7 @@ public class FileUtils {
                 e.printStackTrace();
             }
         }
-        if(buffer == null){
+        if (buffer == null) {
             try {
                 throw new Exception("AudioBuffer is null");
             } catch (Exception e) {

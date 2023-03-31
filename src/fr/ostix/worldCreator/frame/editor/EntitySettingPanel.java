@@ -191,7 +191,7 @@ public class EntitySettingPanel extends JPanel {
         if (original.length() <= limit) {
             return original;
         }
-        return original.substring(0, 5);
+        return original.substring(0, limit);
     }
 
 

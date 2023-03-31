@@ -3,6 +3,8 @@ package fr.ostix.worldCreator.core.loader.json;
 import com.google.gson.*;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class JsonUtils {
 
@@ -14,16 +16,19 @@ public class JsonUtils {
 
     public static String loadJson(String jsonFile) throws IOException {
         StringBuilder sb = new StringBuilder();
-        BufferedReader reader;
 
-        reader = new BufferedReader(
-                new InputStreamReader(new FileInputStream(jsonFile)));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            sb.append(line);
-            sb.append("\n");
+        try (BufferedReader reader =new BufferedReader(
+                new InputStreamReader(Files.newInputStream(Paths.get(jsonFile))))){
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+                sb.append("\n");
+            }
+
+            return sb.toString();
+        }catch (IOException e){
+            e.printStackTrace();
         }
-
         return sb.toString();
     }
 }

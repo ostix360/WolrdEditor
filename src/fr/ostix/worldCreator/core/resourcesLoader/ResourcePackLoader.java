@@ -90,7 +90,9 @@ public class ResourcePackLoader {
 
     private void loadAllTextures() throws Exception {
         File textureFolder = new File(Config.REPOSITORY_FOLDER + "/textures/", DATA);
-        for (File currentFile : Objects.requireNonNull(textureFolder.listFiles())) {
+        List<File> files = new ArrayList<>();
+        FileUtils.listFile(textureFolder, files);
+        for (File currentFile : files) {
 
             String json = JsonUtils.loadJson(currentFile.getAbsolutePath());
             if (json.isEmpty()) {

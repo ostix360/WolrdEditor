@@ -33,8 +33,8 @@ out vec3 toLightVector[MAX_LIGHT];
 out float visibility;
 
 
-const float density = 0.00245;
-const float gradient = 2.85;
+const float density = 0.00095;
+const float gradient = 5.8;
 
 void main(){
 

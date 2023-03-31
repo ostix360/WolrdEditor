@@ -205,44 +205,38 @@ public class ChunkHandler {
     private void unLoadChunks(int playerChunkX, int playerChunkZ, int xMin, int zMin, int xMax, int zMax) {
         Chunk chunk;
 
-        chunk = worldChunk.remove(new Vector2f(playerChunkX, playerChunkZ + zMax + 1));
-        if (chunk != null) {
-            world.getPhysics().remove(chunk);
-            entities.removeAll(chunk.getEntities());
+
+        // Remove chunks at edges
+        for (int x = xMin - 1; x <= xMax + 1; x++) {
+            chunk = worldChunk.remove(new Vector2f(playerChunkX + x, playerChunkZ + zMax + 1));
+            if (chunk != null) {
+                world.getPhysics().remove(chunk);
+                entities.removeAll(chunk.getEntities());
+            }
+
+            chunk = worldChunk.remove(new Vector2f(playerChunkX + x, playerChunkZ + zMin - 1));
+            if (chunk != null) {
+                world.getPhysics().remove(chunk);
+                entities.removeAll(chunk.getEntities());
+            }
         }
 
-        chunk = worldChunk.remove(new Vector2f(playerChunkX, playerChunkZ + zMin - 1));
-        if (chunk != null) {
-            world.getPhysics().remove(chunk);
-            entities.removeAll(chunk.getEntities());
+        for (int z = zMin - 1; z <= zMax + 1; z++) {
+            chunk = worldChunk.remove(new Vector2f(playerChunkX + xMax + 1, playerChunkZ + z));
+            if (chunk != null) {
+                world.getPhysics().remove(chunk);
+                entities.removeAll(chunk.getEntities());
+            }
+
+            chunk = worldChunk.remove(new Vector2f(playerChunkX + xMin - 1, playerChunkZ + z));
+            if (chunk != null) {
+                world.getPhysics().remove(chunk);
+                entities.removeAll(chunk.getEntities());
+            }
         }
 
-        chunk = worldChunk.remove(new Vector2f(playerChunkX + xMax + 1, playerChunkZ));
-        if (chunk != null) {
-            world.getPhysics().remove(chunk);
-            entities.removeAll(chunk.getEntities());
-        }
-
-        chunk = worldChunk.remove(new Vector2f(playerChunkX + xMin - 1, playerChunkZ));
-        if (chunk != null) {
-            world.getPhysics().remove(chunk);
-            entities.removeAll(chunk.getEntities());
-        }
-
-
+        // Remove corner chunks
         chunk = worldChunk.remove(new Vector2f(playerChunkX + xMax + 1, playerChunkZ + zMax + 1));
-        if (chunk != null) {
-            world.getPhysics().remove(chunk);
-            entities.removeAll(chunk.getEntities());
-        }
-
-        chunk = worldChunk.remove(new Vector2f(playerChunkX + xMin - 1, playerChunkZ + zMin - 1));
-        if (chunk != null) {
-            world.getPhysics().remove(chunk);
-            entities.removeAll(chunk.getEntities());
-        }
-
-        chunk = worldChunk.remove(new Vector2f(playerChunkX + xMax + 1, playerChunkZ + zMin - 1));
         if (chunk != null) {
             world.getPhysics().remove(chunk);
             entities.removeAll(chunk.getEntities());
@@ -254,57 +248,68 @@ public class ChunkHandler {
             entities.removeAll(chunk.getEntities());
         }
 
-        for (int x = 0; x < cam.viewDistance + 1; x++) {
-            chunk = worldChunk.remove(new Vector2f(playerChunkX + x, playerChunkZ + zMax + 1));
-            if (chunk != null) {
-                world.getPhysics().remove(chunk);
-                entities.removeAll(chunk.getEntities());
-            }
-
-            chunk = worldChunk.remove(new Vector2f(playerChunkX - x, playerChunkZ + zMax + 1));
-            if (chunk != null) {
-                world.getPhysics().remove(chunk);
-                entities.removeAll(chunk.getEntities());
-            }
-
-            chunk = worldChunk.remove(new Vector2f(playerChunkX + x, playerChunkZ + zMin - 1));
-            if (chunk != null) {
-                world.getPhysics().remove(chunk);
-                entities.removeAll(chunk.getEntities());
-            }
-
-            chunk = worldChunk.remove(new Vector2f(playerChunkX - x, playerChunkZ + zMin - 1));
-            if (chunk != null) {
-                world.getPhysics().remove(chunk);
-                entities.removeAll(chunk.getEntities());
-            }
+        chunk = worldChunk.remove(new Vector2f(playerChunkX + xMax + 1, playerChunkZ + zMin - 1));
+        if (chunk != null) {
+            world.getPhysics().remove(chunk);
+            entities.removeAll(chunk.getEntities());
         }
 
-        for (int z = 0; z < cam.viewDistance + 1; z++) {
-            chunk = worldChunk.remove(new Vector2f(playerChunkX + xMax + 1, playerChunkZ + z));
-            if (chunk != null) {
-                world.getPhysics().remove(chunk);
-                entities.removeAll(chunk.getEntities());
-            }
-
-            chunk = worldChunk.remove(new Vector2f(playerChunkX + xMax + 1, playerChunkZ - z));
-            if (chunk != null) {
-                world.getPhysics().remove(chunk);
-                entities.removeAll(chunk.getEntities());
-            }
-
-            chunk = worldChunk.remove(new Vector2f(playerChunkX + xMin - 1, playerChunkZ + z));
-            if (chunk != null) {
-                world.getPhysics().remove(chunk);
-                entities.removeAll(chunk.getEntities());
-            }
-
-            chunk = worldChunk.remove(new Vector2f(playerChunkX + xMin - 1, playerChunkZ - z));
-            if (chunk != null) {
-                world.getPhysics().remove(chunk);
-                entities.removeAll(chunk.getEntities());
-            }
+        chunk = worldChunk.remove(new Vector2f(playerChunkX + xMin - 1, playerChunkZ + zMin - 1));
+        if (chunk != null) {
+            world.getPhysics().remove(chunk);
+            entities.removeAll(chunk.getEntities());
         }
+//        for (int x = 0; x < cam.viewDistance + 1; x++) {
+//            chunk = worldChunk.remove(new Vector2f(playerChunkX + x, playerChunkZ + zMax + 1));
+//            if (chunk != null) {
+//                world.getPhysics().remove(chunk);
+//                entities.removeAll(chunk.getEntities());
+//            }
+//
+//            chunk = worldChunk.remove(new Vector2f(playerChunkX - x, playerChunkZ + zMax + 1));
+//            if (chunk != null) {
+//                world.getPhysics().remove(chunk);
+//                entities.removeAll(chunk.getEntities());
+//            }
+//
+//            chunk = worldChunk.remove(new Vector2f(playerChunkX + x, playerChunkZ + zMin - 1));
+//            if (chunk != null) {
+//                world.getPhysics().remove(chunk);
+//                entities.removeAll(chunk.getEntities());
+//            }
+//
+//            chunk = worldChunk.remove(new Vector2f(playerChunkX - x, playerChunkZ + zMin - 1));
+//            if (chunk != null) {
+//                world.getPhysics().remove(chunk);
+//                entities.removeAll(chunk.getEntities());
+//            }
+//        }
+//
+//        for (int z = 0; z < cam.viewDistance + 1; z++) {
+//            chunk = worldChunk.remove(new Vector2f(playerChunkX + xMax + 1, playerChunkZ + z));
+//            if (chunk != null) {
+//                world.getPhysics().remove(chunk);
+//                entities.removeAll(chunk.getEntities());
+//            }
+//
+//            chunk = worldChunk.remove(new Vector2f(playerChunkX + xMax + 1, playerChunkZ - z));
+//            if (chunk != null) {
+//                world.getPhysics().remove(chunk);
+//                entities.removeAll(chunk.getEntities());
+//            }
+//
+//            chunk = worldChunk.remove(new Vector2f(playerChunkX + xMin - 1, playerChunkZ + z));
+//            if (chunk != null) {
+//                world.getPhysics().remove(chunk);
+//                entities.removeAll(chunk.getEntities());
+//            }
+//
+//            chunk = worldChunk.remove(new Vector2f(playerChunkX + xMin - 1, playerChunkZ - z));
+//            if (chunk != null) {
+//                world.getPhysics().remove(chunk);
+//                entities.removeAll(chunk.getEntities());
+//            }
+//        }
     }
 
     private void loadChunks(int playerChunkX, int playerChunkZ, int x, int z) {
