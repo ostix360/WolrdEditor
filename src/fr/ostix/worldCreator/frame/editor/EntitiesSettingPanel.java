@@ -14,8 +14,9 @@ import java.util.List;
 
 public class EntitiesSettingPanel extends JPanel {
     private MainFrame frame;
-    private List<Entity> entities;
+    private final List<Entity> entities;
     private float x, y, z;
+
     public EntitiesSettingPanel(List<Entity> entities, int width, int height, MainFrame frame) {
         this.entities = entities;
         this.frame = frame;
@@ -81,26 +82,24 @@ public class EntitiesSettingPanel extends JPanel {
     }
 
 
-
     private void setValue(float value, String variable) {
-        switch (variable.toLowerCase()) {
+        switch (variable.toLowerCase()) { //TODO : fix this
             case "x":
-                entities.forEach(entity -> entity.increasePosition(new Vector3f(x + value,0,0)));
+                entities.forEach(entity -> entity.increasePosition(new Vector3f(x + value, 0, 0)));
                 x = -value;
                 break;
             case "y":
-                entities.forEach(entity -> entity.increasePosition(new Vector3f(0,y + value,0)));
+                entities.forEach(entity -> entity.increasePosition(new Vector3f(0, y + value, 0)));
                 y = -value;
                 break;
             case "z":
-                entities.forEach(entity -> entity.increasePosition(new Vector3f(0,0,z + value)));
+                entities.forEach(entity -> entity.increasePosition(new Vector3f(0, 0, z + value)));
                 z = -value;
                 break;
             default:
                 new IllegalArgumentException(variable + " is not define").printStackTrace();
         }
     }
-
 
 
     private String limitChars(String original, int limit) {

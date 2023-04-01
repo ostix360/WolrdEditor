@@ -14,16 +14,17 @@ public class EntitySettingPanel extends JPanel {
     private MainFrame frame;
     private Entity entity;
     private Vector3f position;
-    private float x, y, z;
+    private float xSlider, ySlider, zSlider;
+    private float xRelative, yRelative, zRelative;
 
     public EntitySettingPanel(Entity e, int width, int height, MainFrame frame) {
         this.entity = e;
         this.position = e.getPosition();
         this.frame = frame;
         this.setup();
-        this.x = position.x();
-        this.y = position.y();
-        this.z = position.z();
+        this.xSlider = this.xRelative = position.x();
+        this.ySlider = this.yRelative = position.y();
+        this.zSlider = this.zRelative = position.z();
     }
 
     private void setup() {
@@ -87,8 +88,7 @@ public class EntitySettingPanel extends JPanel {
             default:
                 new IllegalArgumentException(variable + " is not define").printStackTrace();
         }
-        String sValue = limitChars(String.valueOf(value), 3);
-        SpinnerNumberModel model = new SpinnerNumberModel(Float.valueOf(sValue), null, null, 1);
+        SpinnerNumberModel model = new SpinnerNumberModel(Math.floor(value), null, null, 1);
         final JSpinner spinner = new JSpinner(model);
         spinner.setFont(MainFrame.SMALL_FONT);
         ((JSpinner.DefaultEditor) spinner.getEditor()).getTextField().setEditable(false);
@@ -155,16 +155,13 @@ public class EntitySettingPanel extends JPanel {
     private void setValue(float value, String variable) {
         switch (variable.toLowerCase()) {
             case "x":
-                this.position.x = value;
-                x = value;
+                this.position.x = this.xSlider = value;
                 break;
             case "y":
-                this.position.y = value;
-                y = value;
+                this.position.y = this.ySlider = value;
                 break;
             case "z":
-                this.position.z = value;
-                z = value;
+                this.position.z = this.zSlider = value;
                 break;
             default:
                 new IllegalArgumentException(variable + " is not define").printStackTrace();
@@ -174,13 +171,13 @@ public class EntitySettingPanel extends JPanel {
     private void addValue(float value, String variable) {
         switch (variable.toLowerCase()) {
             case "x":
-                this.position.x = x + value;
+                this.position.x = xSlider + value;
                 break;
             case "y":
-                this.position.y = y + value;
+                this.position.y = ySlider + value;
                 break;
             case "z":
-                this.position.z = z + value;
+                this.position.z = zSlider + value;
                 break;
             default:
                 new IllegalArgumentException(variable + " is not define").printStackTrace();

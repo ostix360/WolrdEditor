@@ -142,11 +142,15 @@ public class MainFrame {
         gc.gridy = 0;
         gc.weightx = 1.0D;
         gc.weighty = 1.0D;
-        mainSettings = new MainSettingsPanel(680, 180, this);
+        mainSettings = new MainSettingsPanel(680, 130, this);
         mainSettings.setVisible(true);
         mainSettings.setEditPanel(EditionMode.TERRAIN);
         mainPanel.add(this.mainSettings, gc);
-        gc.gridy = 1;
+        gc.gridy += 1;
+        JPanel viewPortSettings = new ViewportSettings(680, 50);
+        viewPortSettings.setVisible(true);
+        mainPanel.add(viewPortSettings, gc);
+        gc.gridy += 1;
 //        previewSettings = new PreviewSettingsPanel(580, 105, camera, workspace);
 //        mainPanel.add(this.previewSettings, gc);
         GLData data = new GLData();
@@ -158,7 +162,7 @@ public class MainFrame {
         data.profile = GLData.Profile.CORE;
         canvas = new GLCanvas(data, renderer, camera, world);
         canvas.setPreferredSize(new Dimension(680, 450));
-        gc.gridy = 2;
+        gc.gridy += 1;
         mainPanel.add(this.canvas);
 
 

@@ -14,10 +14,10 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class Camera implements ICamera {
 
-    private static final float RUN_SPEED = 860;
+    public static float RUN_SPEED = 860;
     private static final float TURN_SPEED = 780;
 
-    public final int viewDistance = 3;
+    public final int viewDistance = 9;
 
     private float currentSpeed = 0;
     private float currentTurnSpeed = 0;
