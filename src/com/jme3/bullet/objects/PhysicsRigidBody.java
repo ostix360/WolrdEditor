@@ -159,10 +159,12 @@ public class PhysicsRigidBody extends PhysicsCollisionObject {
      * @param rotation the rotation of the actual physics object
      */
     public void setPhysicsRotation(Quaternionf rotation) {
-        rBody.getCenterOfMassTransform(tempTrans);
-        Converter.convert(rotation, tempTrans.basis);
-        rBody.setCenterOfMassTransform(tempTrans);
-        motionState.setWorldTransform(tempTrans);
+         if (rBody != null) {
+             rBody.getCenterOfMassTransform(tempTrans);
+             Converter.convert(rotation, tempTrans.basis);
+             rBody.setCenterOfMassTransform(tempTrans);
+             motionState.setWorldTransform(tempTrans);
+         }
     }
 
     /**
