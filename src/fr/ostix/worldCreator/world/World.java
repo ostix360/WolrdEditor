@@ -190,6 +190,11 @@ public class World {
                                 entitiesPicked.add(e);
                             }
                             e.setPicking(true);
+                            try {
+                                Thread.sleep(200);
+                            } catch (InterruptedException ex) {
+                                throw new RuntimeException(ex);
+                            }
                         }
                         e.setPicking(true);
                     }
@@ -341,7 +346,7 @@ public class World {
     }
 
     public void refreshCollisions() {
-        //TODO
+
     }
 
     public ChunkHandler getChunkManager() {

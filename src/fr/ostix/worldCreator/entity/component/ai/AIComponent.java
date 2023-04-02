@@ -43,7 +43,7 @@ public class AIComponent extends Component {
         float dx = (float) (pos * Math.sin(Math.toRadians(e.getRotation().y())));
         float dz = (float) (pos * Math.cos(Math.toRadians(e.getRotation().y())));
 //        e.getTorque().set(new Vector3(0, rotY, 0));
-        e.increaseRotation(new Vector3f(0,rotY,0));
+//        e.increaseRotation(new Vector3f(0,rotY,0));
 //        e.getForceToCenter().add(new Vector3(dx, 0, dz));
     }
 

@@ -1,7 +1,10 @@
 package fr.ostix.worldCreator.entity;
 
 
+import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.control.*;
+import com.jme3.bullet.objects.PhysicsCharacter;
+import com.jme3.bullet.objects.PhysicsRigidBody;
 import fr.ostix.worldCreator.entity.component.*;
 import fr.ostix.worldCreator.entity.component.collision.*;
 import fr.ostix.worldCreator.entity.component.particle.*;
@@ -42,7 +45,7 @@ public class Entity {
         this.transform = new Transform(position, rotation, scale);
     }
 
-    public Entity(Model m, String name, String componentID, int id,String type) {
+    public Entity(Model m, String name, String componentID, int id, String type) {
         this.model = m;
         this.name = name;
         this.componentID = componentID;
@@ -66,7 +69,7 @@ public class Entity {
         this.type = entity.type;
         this.textureIndex = entity.textureIndex;
         this.componentID = entity.componentID;
-        this.collision = new CollisionComponent(this,entity.getCollision().getProp());
+        this.collision = new CollisionComponent(this, entity.getCollision().getProp());
         this.id = entity.id;
         this.movement = MovementType.STATIC;
         this.picking = entity.picking;
@@ -94,12 +97,12 @@ public class Entity {
     public void update() {
         for (Component c : components) {
             if (c instanceof ParticleComponent) {
-               // ((ParticleComponent) c).setOffset(new Vector3f(0, 8.5f, 0));
+                // ((ParticleComponent) c).setOffset(new Vector3f(0, 8.5f, 0));
             }
             c.update();
         }
         if (physic != null) {
-            physic.update(1/60f);
+            physic.update(1 / 60f);
         }
 
     }
@@ -119,128 +122,142 @@ public class Entity {
 
     public void increasePosition(Vector3f value) {
         position.add(value);
+        if (collision.getPhysic() instanceof PhysicsRigidBody) {
+            ((PhysicsRigidBody) collision.getPhysic()).setPhysicsLocation(getPosition());
+        } else if (collision.getPhysic() instanceof PhysicsCharacter) {
+            ((PhysicsCharacter) collision.getPhysic()).setPhysicsLocation(getPosition());
+        }
     }
 
     public void increaseRotation(Vector3f value) {
         rotation.add(value); // TODO
+        transform.setRotation(rotation);
+        if (collision.getPhysic() instanceof PhysicsRigidBody) {
+            ((PhysicsRigidBody) collision.getPhysic()).setPhysicsRotation(this.transform.getQRotation());
+        } else if (collision.getPhysic() instanceof PhysicsCharacter) {
+//            ((PhysicsCharacter) collision.getPhysic()).setPhysicsRotation(getRotation());
+            /*
+            TODO Character physic rotation unimplemented
+                Todo : add special mesh collision in Entity editor
+             */
+        }
 //        for (BoundingModel bm : collision.getProperties().getBoundingModels()) {
 //            bm.getTransform().getRotation().add(value);
 //        }
 //        rotation.y %= 360;
-        //transform.setRotation(rotation);
-    }
-
-    public Model getModel() {
-        return model;
-    }
-
-    public Vector3f getPosition() {
-        return position;
-    }
-
-    public Vector3f getRotation() {
-        return rotation;
-    }
-
-    public Vector3f getScale() {
-        return scale;
-    }
-
-    public Transform getTransform() {
-        transform.setRotation(rotation);
-        transform.setPosition(position);
-        transform.setScale(scale);
-        return transform;
-    }
-
-    public void setTextureIndex(int textureIndex) {
-        this.textureIndex = textureIndex;
-    }
-
-    public float getTextureXOffset() {
-        if (model != null && model.getTexture() != null) {
-            float column = textureIndex % model.getTexture().getNumbersOfRows();
-            return column / model.getTexture().getNumbersOfRows();
-        }
-        return 1;
-    }
-
-    public float getTextureYOffset() {
-        if (model != null && model.getTexture() != null) {
-            float row = textureIndex / (float) model.getTexture().getNumbersOfRows();
-            return row / model.getTexture().getNumbersOfRows();
-        }
-        return 1;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public MovementType getMovement() {
-        return movement;
-    }
-
-    public void setMovement(MovementType movement) {
-        this.movement = movement;
-    }
-
-
-    public void setScale(Vector3f scale) {
-        this.scale = scale;
-    }
-
-    public void setPicking(boolean v) {
-        this.picking = v;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public boolean isPicking() {
-        return picking;
-    }
-
-    public String getComponent() {
-        return this.componentID;
-    }
-
-    @Override
-    public String toString() {
-        return name;
-    }
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Entity)) return false;
-        Entity entity = (Entity) o;
-        return textureIndex == entity.textureIndex && isPicking() == entity.isPicking() && getId() == entity.getId() && getModel().equals(entity.getModel()) && getPosition().equals(entity.getPosition()) && getRotation().equals(entity.getRotation()) && getScale().equals(entity.getScale()) && getTransform().equals(entity.getTransform()) && getMovement() == entity.getMovement() && getCollision().equals(entity.getCollision()) && name.equals(entity.name) && componentID.equals(entity.componentID) && components.equals(entity.components);
-    }
-    public Object getControl() {
-        collision.getPhysic().setSpatial(this);
-        return collision.getPhysic();
-    }
-
-
-    public enum MovementType {
-        FORWARD("run"),
-        BACK("back"),
-        JUMP("jump"),
-        STATIC("staying");
-        String id;
-
-        MovementType(String id) {
-            this.id = id;
+            //transform.setRotation(rotation);
         }
 
-        public String getId() {
+        public Model getModel () {
+            return model;
+        }
+
+        public Vector3f getPosition () {
+            return position;
+        }
+
+        public Vector3f getRotation () {
+            return rotation;
+        }
+
+        public Vector3f getScale () {
+            return scale;
+        }
+
+        public Transform getTransform () {
+            transform.setRotation(rotation);
+            transform.setPosition(position);
+            transform.setScale(scale);
+            return transform;
+        }
+
+        public void setTextureIndex ( int textureIndex){
+            this.textureIndex = textureIndex;
+        }
+
+        public float getTextureXOffset () {
+            if (model != null && model.getTexture() != null) {
+                float column = textureIndex % model.getTexture().getNumbersOfRows();
+                return column / model.getTexture().getNumbersOfRows();
+            }
+            return 1;
+        }
+
+        public float getTextureYOffset () {
+            if (model != null && model.getTexture() != null) {
+                float row = textureIndex / (float) model.getTexture().getNumbersOfRows();
+                return row / model.getTexture().getNumbersOfRows();
+            }
+            return 1;
+        }
+
+        public int getId () {
             return id;
         }
+
+        public MovementType getMovement () {
+            return movement;
+        }
+
+        public void setMovement (MovementType movement){
+            this.movement = movement;
+        }
+
+
+        public void setScale (Vector3f scale){
+            this.scale = scale;
+        }
+
+        public void setPicking ( boolean v){
+            this.picking = v;
+        }
+
+        public String getType () {
+            return type;
+        }
+
+        public boolean isPicking () {
+            return picking;
+        }
+
+        public String getComponent () {
+            return this.componentID;
+        }
+
+        @Override
+        public String toString () {
+            return name;
+        }
+
+
+        @Override
+        public boolean equals (Object o){
+            if (this == o) return true;
+            if (!(o instanceof Entity)) return false;
+            Entity entity = (Entity) o;
+            return textureIndex == entity.textureIndex && isPicking() == entity.isPicking() && getId() == entity.getId() && getModel().equals(entity.getModel()) && getPosition().equals(entity.getPosition()) && getRotation().equals(entity.getRotation()) && getScale().equals(entity.getScale()) && getTransform().equals(entity.getTransform()) && getMovement() == entity.getMovement() && getCollision().equals(entity.getCollision()) && name.equals(entity.name) && componentID.equals(entity.componentID) && components.equals(entity.components);
+        }
+        public Object getControl () {
+            collision.getPhysic().setSpatial(this);
+            return collision.getPhysic();
+        }
+
+
+        public enum MovementType {
+            FORWARD("run"),
+            BACK("back"),
+            JUMP("jump"),
+            STATIC("staying");
+            String id;
+
+            MovementType(String id) {
+                this.id = id;
+            }
+
+            public String getId() {
+                return id;
+            }
+        }
+
+
     }
-
-
-
-}

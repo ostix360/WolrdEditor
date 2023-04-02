@@ -57,14 +57,11 @@ public class EntitiesSettingPanel extends JPanel {
     }
 
     private void addSlider(GridBagConstraints gc, String variable) {
-        float value = (float) 0;
-        String sValue = limitChars(String.valueOf(value), 3);
-        SpinnerNumberModel model = new SpinnerNumberModel(Float.valueOf(sValue), null, null, 1);
-        final JSpinner spinner = new JSpinner(model);
-        spinner.setFont(MainFrame.SMALL_FONT);
-        ((JSpinner.DefaultEditor) spinner.getEditor()).getTextField().setEditable(false);
-        spinner.setPreferredSize(new Dimension(55, 20));
         JPanel panel = new JPanel();
+        JButton increase = new JButton("+");
+        JButton decrease = new JButton("-");
+        increase.setPreferredSize(new Dimension(50, 50));
+        decrease.setPreferredSize(new Dimension(50, 50));
         //panel.setPreferredSize(new Dimension(this.getWidth(),70));
         this.add(panel, gc);
         panel.setLayout(new GridBagLayout());
@@ -77,47 +74,30 @@ public class EntitiesSettingPanel extends JPanel {
         label.setFont(MainFrame.SMALL_FONT);
         panel.add(label, gc2);
         gc2.gridx = 1;
-        panel.add(spinner, gc2);
-        spinner.addChangeListener(arg0 -> setValue((Float) spinner.getValue(), variable));
+        panel.add(increase, gc2);
+        increase.addActionListener(arg0 -> setValue(1, variable));
+        gc2.gridx = 2;
+        panel.add(decrease, gc2);
+        decrease.addActionListener(arg0 -> setValue(-1, variable));
     }
 
 
     private void setValue(float value, String variable) {
         switch (variable.toLowerCase()) { //TODO : fix this
             case "x":
-                entities.forEach(entity -> entity.increasePosition(new Vector3f(x + value, 0, 0)));
-                x = -value;
+                final Vector3f v = new Vector3f(value, 0, 0);
+                entities.forEach(entity -> entity.increasePosition(v));
                 break;
             case "y":
-                entities.forEach(entity -> entity.increasePosition(new Vector3f(0, y + value, 0)));
-                y = -value;
+                final Vector3f v2 = new Vector3f(0, value, 0);
+                entities.forEach(entity -> entity.increasePosition(v2));
                 break;
             case "z":
-                entities.forEach(entity -> entity.increasePosition(new Vector3f(0, 0, z + value)));
-                z = -value;
+                final Vector3f v3 = new Vector3f(0, 0, value);
+                entities.forEach(entity -> entity.increasePosition(v3));
                 break;
             default:
                 new IllegalArgumentException(variable + " is not define").printStackTrace();
         }
-    }
-
-
-    private String limitChars(String original, int limit) {
-        if (original.length() <= limit) {
-            return original;
-        }
-        return original.substring(0, 5);
-    }
-
-
-    private float convertScaleValue(float sliderValue) {
-        float value = sliderValue * sliderValue;
-        value *= 200.0F;
-        return value;
-    }
-
-    private float reverseConvertValue(float reflectValue) {
-        float value = reflectValue / 200.0F;
-        return Math.sqrt(value);
     }
 }
