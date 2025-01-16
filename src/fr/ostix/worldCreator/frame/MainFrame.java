@@ -177,18 +177,8 @@ public class MainFrame {
         for (File currentFile : Objects.requireNonNull(entitiesFiles.listFiles())) {
             try (FileInputStream fos = new FileInputStream(currentFile); FileChannel fc = fos.getChannel()) {
                 ByteBuffer buffer = ByteBuffer.allocate(48);
-                int noOfBytesRead = fc.read(buffer);
-                StringBuilder sb = new StringBuilder();
-                while (noOfBytesRead != -1) {
-                    buffer.flip();
 
-                    while (buffer.hasRemaining()) {
-                        sb.append((char) buffer.get());
-                    }
-
-                    buffer.clear();
-                    noOfBytesRead = fc.read(buffer);
-                }
+                StringBuilder sb = readFile(fc, buffer);;
                 String content = sb.toString();
                 String[] contents = content.split(";");
                 Model m = ResourcePackLoader.getModelByName().get(contents[0]);
@@ -197,8 +187,8 @@ public class MainFrame {
                 }
                 int id = Integer.parseInt(contents[1]);
                 if (id == 0){
-                    Logger.log("Cannot add  a player in the world");
-                    return;
+                    Logger.log("Cannot add a player in the world");
+                    continue;
                 }
                 Entity e = new Entity(m, contents[0], contents[2],id,contents[3]);
                 LoadComponents.loadComponents(ResourcePackLoader.getComponentsByID().get(Integer.valueOf(contents[2])), e);
@@ -206,8 +196,27 @@ public class MainFrame {
                     Logger.err("The model of  " + e + " is null");
                 }
                 entities.add(e);
+            }catch (Exception e){
+                Logger.err("Cannot load the entity " + currentFile.getName());
+                e.printStackTrace();
             }
         }
+    }
+
+    public static StringBuilder readFile(FileChannel fc, ByteBuffer buffer) throws IOException {
+        int noOfBytesRead = fc.read(buffer);
+        StringBuilder sb = new StringBuilder();
+        while (noOfBytesRead != -1) {
+            buffer.flip();
+
+            while (buffer.hasRemaining()) {
+                sb.append((char) buffer.get());
+            }
+
+            buffer.clear();
+            noOfBytesRead = fc.read(buffer);
+        }
+        return sb;
     }
 
     public void notifyNewChunk(int x, int z, int xCoords, int zCoords) {

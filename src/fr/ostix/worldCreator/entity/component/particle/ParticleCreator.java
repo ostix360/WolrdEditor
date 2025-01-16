@@ -19,7 +19,7 @@ public class ParticleCreator implements ComponentCreator {
     public Component loadComponent(String component, Entity entity) {
         ParticleSystem system = null;
         String[] lines = component.split("\n");
-        Texture tex = ResourcePack.getTextureByName().get(lines[lines.length - 1]);
+        Texture tex = ResourcePackLoader.getTextureByName().get(lines[lines.length - 1]);
         ParticleTexture texture = new ParticleTexture(tex.getID(), tex.getNumbersOfRows(), tex.isAdditive());
         String[] values;
         try {

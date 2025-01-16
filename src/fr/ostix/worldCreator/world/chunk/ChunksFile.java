@@ -57,16 +57,7 @@ public class ChunksFile {
                 return;
             }
             ByteBuffer buffer = ByteBuffer.allocate(1024);
-            int noOfBytesRead = fc.read(buffer);
-            StringBuilder sb = new StringBuilder();
-            while (noOfBytesRead != -1) {
-                buffer.flip();
-                while (buffer.hasRemaining()) {
-                    sb.append((char)buffer.get());
-                }
-                buffer.clear();
-                noOfBytesRead = fc.read(buffer);
-            }
+            StringBuilder sb = MainFrame.readFile(fc, buffer);
             content = sb.toString();
         } catch (IOException e) {
             e.printStackTrace();

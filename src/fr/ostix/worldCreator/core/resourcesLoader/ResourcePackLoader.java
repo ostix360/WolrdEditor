@@ -20,7 +20,7 @@ import java.util.*;
 public class ResourcePackLoader {
 
     private final String DATA = "data";
-    private final HashMap<String, Texture> textureByName = new HashMap<>();
+    private static final HashMap<String, Texture> textureByName = new HashMap<>();
     private final HashMap<String, SoundSource> soundByName = new HashMap<>();
     private static final HashMap<String, Model> modelByName = new HashMap<>();
     private final HashMap<TextureLoaderRequest, String> textureRequestByName = new HashMap<>();
@@ -104,6 +104,9 @@ public class ResourcePackLoader {
             }
             String name = current.getName();
             TextureProperties prop = current.getTextureProperties();
+            if (prop == null) {
+                throw new NullPointerException("The file " + currentFile.getName() + " has no properties");
+            }
             if (prop.getNormalMapName() != null) {
                 TextureLoaderRequest tr = new TextureLoaderRequest("entities/normal/" + prop.getNormalMapName());
                 GLRequestProcessor.sendRequest(tr);
@@ -203,7 +206,7 @@ public class ResourcePackLoader {
     }
 
 
-    public HashMap<String, Texture> getTextureByName() {
+    public static HashMap<String, Texture> getTextureByName() {
         return textureByName;
     }
 

@@ -31,7 +31,7 @@ public class EntitySettingPanel extends JPanel {
         this.setLayout(new GridBagLayout());
         GridBagConstraints gc = new GridBagConstraints();
         //this.setPreferredSize(new Dimension(width,height));
-        gc.fill = 3;
+        gc.fill = 4;
         gc.gridx = 1;
         gc.gridy = 0;
         gc.gridwidth = 0;
@@ -46,7 +46,14 @@ public class EntitySettingPanel extends JPanel {
         addSlider(gc, "Y");
         gc.gridy = 3;
         addSlider(gc, "Z");
+        gc.gridy = 4;
+        addIdLabel(gc);
+    }
 
+    private void addIdLabel(GridBagConstraints gc) {
+        JLabel label = new JLabel("ID: " + entity.getId());
+        label.setFont(MainFrame.SMALL_FONT);
+        this.add(label, gc);
     }
 
     private void addRefreshButton(GridBagConstraints gc) {

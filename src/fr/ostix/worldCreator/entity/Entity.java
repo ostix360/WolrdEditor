@@ -30,7 +30,7 @@ public class Entity {
 
     private List<Component> components = new ArrayList<>();
     private boolean picking = false;
-    private final int id;
+    private int id;
     protected PhysicsControl physic;
 
     private String type = "Entity";
@@ -195,7 +195,11 @@ public class Entity {
             return id;
         }
 
-        public MovementType getMovement () {
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public MovementType getMovement () {
             return movement;
         }
 

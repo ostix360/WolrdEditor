@@ -165,6 +165,7 @@ public class World {
                 entityPicked.getScale().add(new Vector3f(GLCanvas.mouseDWheel * entityPicked.getScale().y() / 25f));
                 if (Input.keysMouse[GLFW_MOUSE_BUTTON_1] && canAddEntity) {
                     Entity clone = entityPicked.clone();
+                    clone.setId((int) (clone.getPosition().x() + clone.getPosition().z()) + clone.getId());
 
                     entities.add(clone);
                     chunkHandler.addEntity(mousePicker.getCurrentChunk(), clone);
